@@ -2,7 +2,7 @@
 // Created by phil on 21.03.20.
 //
 
-#include "GpioWheel.h"
+#include "GpioWheel/GpioWheel.h"
 #include <pigpio.h>
 #include <stdexcept>
 constexpr int HIGH = 1;

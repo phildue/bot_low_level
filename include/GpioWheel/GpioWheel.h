@@ -5,8 +5,6 @@
 #ifndef GPIOCPP_GPIOWHEEL_H
 #define GPIOCPP_GPIOWHEEL_H
 
-
-
 using GpioId = unsigned int;
 class GpioWheel
 {
