@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <stdio.h>
-#include "GpioWheel.h"
+#include "GpioWheel/GpioWheel.h"
 
 
 constexpr int enA = 21;
