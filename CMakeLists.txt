@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(gpiocpp)
+project(GpioWheel)
 
 set(CMAKE_CXX_STANDARD 14)
 set(GPIOCPP_COMPILE_FOR_PI TRUE CACHE BOOL "Set true if compile for pi")
