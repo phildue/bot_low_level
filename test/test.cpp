@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <GpioWheel/GpioWheel.h>
-
+#include <thread>
 
 constexpr int enA = 21;
 constexpr int enB = 13;
@@ -24,11 +24,13 @@ int main(int argc, char *argv[])
     {
         left.set((float)i/60.0f);
         right.set(-1.0f * (float)i/60.0f);
+	std::this_thread::sleep_for (std::chrono::milliseconds(500));
     }
     for(int i = 60; i > 0; i--)
     {
         left.set((float)i/60.0f);
         right.set((float)-i/60.0f);
+	std::this_thread::sleep_for (std::chrono::milliseconds(500));
     }
     left.stop();
     right.stop();
