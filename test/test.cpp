@@ -15,15 +15,20 @@ constexpr int in4 = 19;
 
 int main(int argc, char *argv[])
 {
-    GpioWheel left(in1,in2,enA,0.5);
-    GpioWheel right(in4,in3,enB,0.5);
+    GpioWheel left(in1,in2,enA);
+    GpioWheel right(in4,in3,enB);
 
     auto start = std::chrono::system_clock::now();
 
-    while (std::chrono::duration_cast<std::chrono::seconds>((std::chrono::system_clock::now() - start)).count() < 5.0)
+    for(int i = 0; i < 60; i++)
     {
-        left.forward();
-        right.backward();
+        left.set((float)i/60.0f);
+        right.set(-1.0f * (float)i/60.0f);
+    }
+    for(int i = 60; i > 0; i--)
+    {
+        left.set((float)i/60.0f);
+        right.set((float)-i/60.0f);
     }
     left.stop();
     right.stop();
