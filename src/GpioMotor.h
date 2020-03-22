@@ -5,14 +5,16 @@
 #ifndef GPIOCPP_GPIOWHEEL_H
 #define GPIOCPP_GPIOWHEEL_H
 #include <inttypes.h>
+namespace pi_ln298n{
+
 using GpioId = unsigned int;
-class GpioWheel
+class GpioMotor
 {
 public:
-    GpioWheel(GpioId forward,GpioId backward, GpioId enable);
+    GpioMotor(GpioId forward, GpioId backward, GpioId enable);
     void set(float torquePerc);
     void stop();
-    ~GpioWheel();
+    ~GpioMotor();
 protected:
     void forward(float torquePerc);
     void backward(float torquePerc);
@@ -20,4 +22,6 @@ protected:
     static unsigned int _nInstances;
     GpioId _forward,_backward,_enable;
 };
+
+}
 #endif //GPIOCPP_GPIOWHEEL_H

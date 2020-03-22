@@ -1,26 +1,28 @@
 cmake_minimum_required(VERSION 3.10)
-project(GpioWheel)
+project(pi_ln298n)
 
 set(CMAKE_CXX_STANDARD 14)
-set(GPIOCPP_COMPILE_FOR_PI TRUE CACHE BOOL "Set true if compile for pi")
-set(GPIOCPP_COMPILE_TESTS FALSE CACHE BOOL "Set true if compile for pi")
+set(COMPILE_FOR_PI TRUE CACHE BOOL "Set true if compile for pi")
+set(COMPILE_TESTS FALSE CACHE BOOL "Set true if compile for pi")
 
-if(GPIOCPP_COMPILE_FOR_PI)
-    set(target_sources  src/GpioWheel/GpioWheel.cpp)
+if(COMPILE_FOR_PI)
+    set(target_sources src/GpioMotor.cpp)
 else()
-    set(target_sources src/GpioWheel/GpioWheelStub.cpp)
+    set(target_sources src/GpioMotorStub.cpp)
 endif()
 
-add_library(${PROJECT_NAME} ${target_sources})
+add_library(${PROJECT_NAME} ${target_sources} src/GpioMotor.h)
+target_include_directories(${PROJECT_NAME} PUBLIC src)
+
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
-if(GPIOCPP_COMPILE_FOR_PI)
+if(COMPILE_FOR_PI)
     target_link_libraries(${PROJECT_NAME} -lpigpio)
 endif()
 
-if(GPIOCPP_COMPILE_TESTS)
-    add_executable(test_gpiocpp test/test.cpp)
-    target_link_libraries(test_gpiocpp ${PROJECT_NAME})
+if(COMPILE_TESTS)
+    add_executable(test_gpiomotor test/test.cpp)
+    target_link_libraries(test_gpiomotor ${PROJECT_NAME})
 endif()
 
 

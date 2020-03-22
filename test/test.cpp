@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <stdio.h>
-#include <GpioWheel/GpioWheel.h>
+#include "../src/GpioMotor.h"
 #include <thread>
 
 constexpr int enA = 21;
