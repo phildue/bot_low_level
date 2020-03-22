@@ -10,17 +10,10 @@ constexpr int LOW = 0;
 
 unsigned int GpioWheel::_nInstances = 0;
 
-GpioWheel::GpioWheel(GpioId forward, GpioId backward, GpioId enable, float dutyCycle = 0.5f):
+GpioWheel::GpioWheel(GpioId forward, GpioId backward, GpioId enable):
 _forward(forward),
 _backward(backward),
 _enable(enable){
-
-
-    if( !(0 < dutyCycle && dutyCycle < 1.0))
-    {
-        throw std::runtime_error( "Duty cycle has to be between 0 and 1");
-
-    }
 
     if (0 == _nInstances)
     {
@@ -35,18 +28,20 @@ _enable(enable){
     gpioSetMode(_backward, PI_OUTPUT);
     gpioSetMode(_enable, PI_OUTPUT);
 
-    int dutyCycleBit = (int)(dutyCycle*255.0f);
 
-    gpioPWM(_enable, dutyCycleBit);
 
 }
 
-void GpioWheel::forward() {
+void GpioWheel::forward(float torquePerc) {
+    gpioPWM(_enable, torqueToDutyCycle(torquePerc));
+
     gpioWrite(_forward,HIGH);
     gpioWrite(_backward,LOW);
 }
 
-void GpioWheel::backward() {
+void GpioWheel::backward(float torquePerc) {
+    gpioPWM(_enable, torqueToDutyCycle(torquePerc));
+
     gpioWrite(_forward, LOW);
     gpioWrite(_backward,HIGH);
 }
@@ -54,6 +49,14 @@ void GpioWheel::backward() {
 void GpioWheel::stop() {
     gpioWrite(_forward,LOW);
     gpioWrite(_backward,LOW);
+}
+
+uint8_t GpioWheel::torqueToDutyCycle(float torquePerc) {
+
+    auto torquePercClipped = torquePerc > 1.0 ? 1.0 : torquePerc;
+    torquePercClipped = torquePercClipped < 0.0 ? 0.0 : torquePercClipped;
+
+    return (uint8_t)(torquePercClipped*255.0f);
 }
 
 GpioWheel::~GpioWheel() {
