@@ -13,9 +13,11 @@ class GpioMotor
 public:
     GpioMotor(GpioId forward, GpioId backward, GpioId enable);
     void set(float torquePerc);
+    float torque() {return _torque;}
     void stop();
     ~GpioMotor();
 protected:
+    float _torque;
     void forward(float torquePerc);
     void backward(float torquePerc);
     uint8_t torqueToDutyCycle(float torquePerc);

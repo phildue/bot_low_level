@@ -37,7 +37,8 @@ namespace pi_ln298n {
     }
 
     void GpioMotor::forward(float torquePerc) {
-        gpioPWM(_enable, torqueToDutyCycle(torquePerc));
+        _torque = torqueToDutyCycle(torquePerc);
+        gpioPWM(_enable, _torque);
 
         gpioWrite(_forward, HIGH);
         gpioWrite(_backward, LOW);
