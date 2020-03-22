@@ -36,3 +36,7 @@ GpioWheel::~GpioWheel() {
 uint8_t GpioWheel::torqueToDutyCycle(float torquePerc) {
     return 0;
 }
+
+void GpioWheel::set(float torquePerc) {
+
+}

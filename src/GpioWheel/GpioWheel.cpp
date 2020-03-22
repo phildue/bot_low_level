@@ -27,9 +27,15 @@ _enable(enable){
     gpioSetMode(_forward, PI_OUTPUT);
     gpioSetMode(_backward, PI_OUTPUT);
     gpioSetMode(_enable, PI_OUTPUT);
+}
 
-
-
+void GpioWheel::set(float torquePerc) {
+    if ( torquePerc > 0)
+    {
+        forward(torquePerc);
+    }else{
+        backward(std::abs(torquePerc));
+    }
 }
 
 void GpioWheel::forward(float torquePerc) {
