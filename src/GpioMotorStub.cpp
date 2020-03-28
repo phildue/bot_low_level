@@ -4,6 +4,8 @@
 
 #include "GpioMotor.h"
 #include <stdexcept>
+#include <iostream>
+
 constexpr int HIGH = 1;
 constexpr int LOW = 0;
 namespace pi_ln298n {
@@ -39,6 +41,7 @@ namespace pi_ln298n {
     }
 
     void GpioMotor::set(float torquePerc) {
+        std::cout << "GpioMotor::Setting: " <<  torquePerc;
 
     }
 }
