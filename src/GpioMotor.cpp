@@ -23,11 +23,10 @@ namespace pi_ln298n {
             _enable(enable) {
 
         if (0 == _nInstances) {
-            if (gpioInitialise() == PI_INITIALISED) {
-                std::cout << "Pigpio initalised" << std::endl;
-            }else{
+            if (gpioInitialise() < 0) {
                 throw std::runtime_error("pigpio initialisation failed\n");
-
+            }else{
+                std::cout << "Pigpio initalised" << std::endl;
             }
         }
         _nInstances++;
