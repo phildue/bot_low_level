@@ -41,7 +41,12 @@ namespace pi_ln298n {
     }
 
     void GpioMotor::set(float torquePerc) {
-        std::cout << "GpioMotor::Setting: " <<  torquePerc;
+        if(torquePerc != _torque)
+        {
+            //std::cout << "GpioMotor::Setting: " <<  _torque;
+            _torque = torquePerc;
+
+        }
 
     }
 }
