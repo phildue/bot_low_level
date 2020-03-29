@@ -54,6 +54,7 @@ namespace pi_ln298n {
     }
 
     void GpioMotor::stop() {
+        initialize();
         gpioWrite(_forward, LOW);
         gpioWrite(_backward, LOW);
     }
@@ -75,6 +76,7 @@ namespace pi_ln298n {
     }
 
     float GpioMotor::effort() {
+        initialize();
         auto pwm = gpioGetPWMdutycycle(_enable)/255.0f;
         if(HIGH == gpioRead(_forward) && LOW == gpioRead(_backward))
         {
