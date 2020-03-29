@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <stdio.h>
-#include "../src/GpioMotor.h"
+#include "pi_ln298n/pi_ln298n.h"
 #include <thread>
 
 constexpr int enA = 21;
@@ -12,11 +12,11 @@ constexpr int in3 = 26;
 constexpr int in4 = 19;
 
 #include <chrono>
-
+using namespace pi_ln298n;
 int main(int argc, char *argv[])
 {
-    GpioWheel left(in1,in2,enA);
-    GpioWheel right(in4,in3,enB);
+    GpioMotor left(in1,in2,enA);
+    GpioMotor right(in4,in3,enB);
 
     auto start = std::chrono::system_clock::now();
 
