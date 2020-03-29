@@ -85,11 +85,8 @@ namespace pi_ln298n {
     }
 
     void GpioMotor::initialize() {
-        if (gpioInitialise() == PI_INITIALISED) {
-            std::cout << "Pigpio initalised" << std::endl;
-        }else{
+        if (gpioInitialise() < 0) {
             throw std::runtime_error("pigpio initialisation failed\n");
-
         }
     }
 }
