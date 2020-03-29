@@ -47,14 +47,13 @@ namespace pi_ln298n {
     void GpioMotor::forward(float effortPerc) {
         auto pwm = effort2pwm(effortPerc);
         gpioPWM(_enable, pwm);
-
         gpioWrite(_forward, HIGH);
         gpioWrite(_backward, LOW);
     }
 
     void GpioMotor::backward(float effortPerc) {
-        gpioPWM(_enable, effort2pwm(effortPerc));
-
+        auto pwm = effort2pwm(effortPerc);
+        gpioPWM(_enable, pwm);
         gpioWrite(_forward, LOW);
         gpioWrite(_backward, HIGH);
     }
@@ -64,18 +63,17 @@ namespace pi_ln298n {
         gpioWrite(_backward, LOW);
     }
 
-    uint8_t GpioMotor::effort2pwm(float effortPerc) {
+    int GpioMotor::effort2pwm(float effortPerc) {
 
         auto torquePercClipped = effortPerc > 1.0 ? 1.0 : effortPerc;
         torquePercClipped = torquePercClipped < 0.0 ? 0.0 : torquePercClipped;
 
-        return (uint8_t) (torquePercClipped * 255.0f);
+        return (torquePercClipped * 255.0f);
     }
 
     GpioMotor::~GpioMotor() {
 
         if (_nInstances <= 1) {
-            /* Stop DMA, release resources */
             gpioTerminate();
         }
         _nInstances--;
@@ -87,7 +85,7 @@ namespace pi_ln298n {
         {
             return pwm;
         }else{
-            return -1.0 * pwm;
+            return -1.0f * pwm;
         }
     }
 }
