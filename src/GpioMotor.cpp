@@ -22,14 +22,7 @@ namespace pi_ln298n {
             _backward(backward),
             _enable(enable) {
 
-        if (0 == _nInstances) {
-            if (gpioInitialise() == PI_INITIALISED) {
-                std::cout << "Pigpio initalised" << std::endl;
-            }else{
-                throw std::runtime_error("pigpio initialisation failed\n");
 
-            }
-        }
         _nInstances++;
 
         gpioSetMode(_forward, PI_OUTPUT);
@@ -38,6 +31,7 @@ namespace pi_ln298n {
     }
 
     void GpioMotor::set(float torquePerc) {
+        initialize();
         if (torquePerc > 0) {
             forward(torquePerc);
         } else {
@@ -87,6 +81,15 @@ namespace pi_ln298n {
             return pwm;
         }else{
             return -1.0f * pwm;
+        }
+    }
+
+    void GpioMotor::initialize() {
+        if (gpioInitialise() == PI_INITIALISED) {
+            std::cout << "Pigpio initalised" << std::endl;
+        }else{
+            throw std::runtime_error("pigpio initialisation failed\n");
+
         }
     }
 }

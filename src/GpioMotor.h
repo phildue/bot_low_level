@@ -16,7 +16,7 @@ public:
     void stop();
     ~GpioMotor();
 protected:
-
+    void initialize();
     void forward(float effortPerc);
     void backward(float effortPerc);
     int effort2pwm(float effortPerc);
