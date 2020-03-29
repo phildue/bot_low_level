@@ -24,7 +24,7 @@ namespace pi_ln298n {
 
 
         _nInstances++;
-
+        initialize();
         gpioSetMode(_forward, PI_OUTPUT);
         gpioSetMode(_backward, PI_OUTPUT);
         gpioSetMode(_enable, PI_OUTPUT);
