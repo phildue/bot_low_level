@@ -38,4 +38,9 @@ float gpioGetPWMdutycycle(int pin)
 {
     return 0.0f;
 }
+
+void gpioSetPWMfrequency(int pin,int freq)
+{
+
+}
 #endif //PIGPIOSTUB_H

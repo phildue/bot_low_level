@@ -28,6 +28,7 @@ namespace pi_ln298n {
         gpioSetMode(_forward, PI_OUTPUT);
         gpioSetMode(_backward, PI_OUTPUT);
         gpioSetMode(_enable, PI_OUTPUT);
+        gpioSetPWMfrequency(_enable,1000);
     }
 
     void GpioMotor::set(float torquePerc) {
