@@ -3,8 +3,13 @@
 //
 
 #include "GpioMotor.h"
+#ifdef COMPILE_FOR_PI
 #include <pigpio.h>
+#else
+#include <pigpiostub.h>
+#endif
 #include <stdexcept>
+#include <iostream>
 constexpr int HIGH = 1;
 constexpr int LOW = 0;
 namespace pi_ln298n {
@@ -17,8 +22,11 @@ namespace pi_ln298n {
             _enable(enable) {
 
         if (0 == _nInstances) {
-            if (gpioInitialise() < 0) {
+            if (gpioInitialise() == PI_INITIALISED) {
+                std::cout << "Pigpio initalised" << std::endl;
+            }else{
                 throw std::runtime_error("pigpio initialisation failed\n");
+
             }
         }
         _nInstances++;
@@ -36,16 +44,16 @@ namespace pi_ln298n {
         }
     }
 
-    void GpioMotor::forward(float torquePerc) {
-        _torque = torqueToDutyCycle(torquePerc);
-        gpioPWM(_enable, _torque);
+    void GpioMotor::forward(float effortPerc) {
+        auto pwm = effort2pwm(effortPerc);
+        gpioPWM(_enable, pwm);
 
         gpioWrite(_forward, HIGH);
         gpioWrite(_backward, LOW);
     }
 
-    void GpioMotor::backward(float torquePerc) {
-        gpioPWM(_enable, torqueToDutyCycle(torquePerc));
+    void GpioMotor::backward(float effortPerc) {
+        gpioPWM(_enable, effort2pwm(effortPerc));
 
         gpioWrite(_forward, LOW);
         gpioWrite(_backward, HIGH);
@@ -56,9 +64,9 @@ namespace pi_ln298n {
         gpioWrite(_backward, LOW);
     }
 
-    uint8_t GpioMotor::torqueToDutyCycle(float torquePerc) {
+    uint8_t GpioMotor::effort2pwm(float effortPerc) {
 
-        auto torquePercClipped = torquePerc > 1.0 ? 1.0 : torquePerc;
+        auto torquePercClipped = effortPerc > 1.0 ? 1.0 : effortPerc;
         torquePercClipped = torquePercClipped < 0.0 ? 0.0 : torquePercClipped;
 
         return (uint8_t) (torquePercClipped * 255.0f);
@@ -71,5 +79,15 @@ namespace pi_ln298n {
             gpioTerminate();
         }
         _nInstances--;
+    }
+
+    float GpioMotor::effort() {
+        auto pwm = gpioGetPWMdutycycle(_enable)/255.0f;
+        if(HIGH == gpioRead(_forward) && LOW == gpioRead(_backward))
+        {
+            return pwm;
+        }else{
+            return -1.0 * pwm;
+        }
     }
 }

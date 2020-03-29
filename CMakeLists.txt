@@ -5,13 +5,11 @@ set(CMAKE_CXX_STANDARD 14)
 set(COMPILE_FOR_PI TRUE CACHE BOOL "Set true if compile for pi")
 set(COMPILE_TESTS FALSE CACHE BOOL "Set true if compile for pi")
 
-if(COMPILE_FOR_PI)
-    set(target_sources src/GpioMotor.cpp)
-else()
-    set(target_sources src/GpioMotorStub.cpp)
+if(NOT COMPILE_FOR_PI)
+    set(target_sources src/pigpiostub.h)
 endif()
 
-add_library(${PROJECT_NAME} ${target_sources} src/GpioMotor.h)
+add_library(${PROJECT_NAME} ${target_sources} src/GpioMotor.h src/GpioMotor.cpp)
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
