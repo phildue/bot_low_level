@@ -3,6 +3,7 @@
 //
 
 #include "GpioMotor.h"
+
 #ifdef COMPILE_FOR_PI
 #include <pigpio.h>
 #else

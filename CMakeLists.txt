@@ -10,8 +10,12 @@ if(NOT COMPILE_FOR_PI)
 endif()
 
 add_library(${PROJECT_NAME} ${target_sources} src/GpioMotor.h src/GpioMotor.cpp)
-target_include_directories(${PROJECT_NAME} PUBLIC src)
 
+if(COMPILE_FOR_PI)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE COMPILE_FOR_PI)
+endif()
+
+target_include_directories(${PROJECT_NAME} PUBLIC src)
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 if(COMPILE_FOR_PI)
