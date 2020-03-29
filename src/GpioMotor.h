@@ -12,7 +12,6 @@ class GpioMotor
 public:
     GpioMotor(GpioId forward, GpioId backward, GpioId enable);
     void set(float effort);
-    float effort();
     void stop();
     ~GpioMotor();
 protected:

@@ -6,7 +6,7 @@ set(COMPILE_FOR_PI TRUE CACHE BOOL "Set true if compile for pi")
 set(COMPILE_TESTS FALSE CACHE BOOL "Set true if compile for pi")
 
 if(NOT COMPILE_FOR_PI)
-    set(target_sources src/pigpiostub.h)
+    set(target_sources src/pigpiostub.h src/pigpiostub.cpp)
 endif()
 
 add_library(${PROJECT_NAME} ${target_sources} src/GpioMotor.h src/GpioMotor.cpp)

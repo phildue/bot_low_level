@@ -7,40 +7,20 @@
 
 #define PI_OUTPUT 1
 #define PI_INITIALISED 0
-int gpioInitialise(){
-    return PI_INITIALISED;
-}
-void gpioSetMode(int pin,int sig)
-{
-
-}
 
 
-void gpioWrite(int pin,int sig)
-{
 
-}
-void gpioPWM(int pin,float sig)
-{
+int gpioInitialise();
+void gpioSetMode(int pin,int sig);
 
-}
-int gpioRead(int pin)
-{
-    return 0;
-}
 
-void gpioTerminate()
-{
+void gpioWrite(int pin,int sig);
+void gpioPWM(int pin,float sig);
+int gpioRead(int pin);
 
-}
+void gpioTerminate();
 
-float gpioGetPWMdutycycle(int pin)
-{
-    return 0.0f;
-}
+float gpioGetPWMdutycycle(int pin);
 
-void gpioSetPWMfrequency(int pin,int freq)
-{
-
-}
+void gpioSetPWMfrequency(int pin,int freq);
 #endif //PIGPIOSTUB_H

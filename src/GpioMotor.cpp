@@ -76,17 +76,6 @@ namespace pi_ln298n {
         _nInstances--;
     }
 
-    float GpioMotor::effort() {
-        initialize();
-        auto pwm = gpioGetPWMdutycycle(_enable)/255.0f;
-        if(HIGH == gpioRead(_forward) && LOW == gpioRead(_backward))
-        {
-            return pwm;
-        }else{
-            return -1.0f * pwm;
-        }
-    }
-
     void GpioMotor::initialize() {
         if (gpioInitialise() < 0) {
             throw std::runtime_error("pigpio initialisation failed\n");
