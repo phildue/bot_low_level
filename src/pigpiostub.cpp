@@ -8,8 +8,11 @@
 #define PI_OUTPUT 1
 #define PI_INITIALISED 0
 #include <vector>
+#include <iostream>
+
 static float pwmDutyCycle = 0;
-static std::vector<float> pwms = std::vector<float>(50);
+static std::vector<float> pins = std::vector<float>(50);
+
 int gpioInitialise(){
     return PI_INITIALISED;
 }
@@ -21,11 +24,19 @@ void gpioSetMode(int pin,int sig)
 
 void gpioWrite(int pin,int sig)
 {
-
+    if(sig != pins[pin])
+    {
+        std::cout << "Setting " << pin << ": " << sig << std::endl;
+    }
+    pins[pin] = sig;
 }
 void gpioPWM(int pin,float sig)
 {
-    pwms[pin] = sig;
+    if(sig != pins[pin])
+    {
+        std::cout << "Setting " << pin << ": " << sig << std::endl;
+    }
+    pins[pin] = sig;
 }
 int gpioRead(int pin)
 {
@@ -39,7 +50,7 @@ void gpioTerminate()
 
 float gpioGetPWMdutycycle(int pin)
 {
-    return pwms[pin];
+    return pins[pin];
 }
 
 void gpioSetPWMfrequency(int pin,int freq)
