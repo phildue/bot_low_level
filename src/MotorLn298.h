@@ -4,23 +4,23 @@
 
 #ifndef GPIOCPP_GPIOWHEEL_H
 #define GPIOCPP_GPIOWHEEL_H
+#include <memory>
+#include "PiGpio.h"
 namespace pi_ln298n{
 
-using GpioId = unsigned int;
-class GpioMotor
+class MotorLn298
 {
 public:
-    GpioMotor(GpioId forward, GpioId backward, GpioId enable);
+    MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<PiGpio> piGpio);
     void set(float effort);
     void stop();
-    ~GpioMotor();
 protected:
     void initialize();
     void forward(float effortPerc);
     void backward(float effortPerc);
     int effort2pwm(float effortPerc);
-    static unsigned int _nInstances;
     GpioId _forward,_backward,_enable;
+    std::shared_ptr<PiGpio> _piGpio;
 };
 
 }

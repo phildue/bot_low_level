@@ -2,7 +2,7 @@
 // Created by phil on 21.03.20.
 //
 
-#include "GpioMotor.h"
+#include "MotorLn298.h"
 
 #ifdef COMPILE_FOR_PI
 #include <pigpio.h>
@@ -15,15 +15,15 @@ constexpr int HIGH = 1;
 constexpr int LOW = 0;
 namespace pi_ln298n {
 
-    unsigned int GpioMotor::_nInstances = 0;
 
-    GpioMotor::GpioMotor(GpioId forward, GpioId backward, GpioId enable) :
+    MotorLn298::MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<PiGpio> piGpio) :
             _forward(forward),
             _backward(backward),
-            _enable(enable) {
+            _enable(enable),
+            _piGpio(piGpio)
+            {
 
 
-        _nInstances++;
         initialize();
         gpioSetMode(_forward, PI_OUTPUT);
         gpioSetMode(_backward, PI_OUTPUT);
@@ -31,7 +31,7 @@ namespace pi_ln298n {
         gpioSetPWMfrequency(_enable,1000);
     }
 
-    void GpioMotor::set(float torquePerc) {
+    void MotorLn298::set(float torquePerc) {
         initialize();
         if (torquePerc > 0) {
             forward(torquePerc);
@@ -40,43 +40,35 @@ namespace pi_ln298n {
         }
     }
 
-    void GpioMotor::forward(float effortPerc) {
+    void MotorLn298::forward(float effortPerc) {
         auto pwm = effort2pwm(effortPerc);
         gpioPWM(_enable, pwm);
         gpioWrite(_forward, HIGH);
         gpioWrite(_backward, LOW);
     }
 
-    void GpioMotor::backward(float effortPerc) {
+    void MotorLn298::backward(float effortPerc) {
         auto pwm = effort2pwm(effortPerc);
         gpioPWM(_enable, pwm);
         gpioWrite(_forward, LOW);
         gpioWrite(_backward, HIGH);
     }
 
-    void GpioMotor::stop() {
+    void MotorLn298::stop() {
         initialize();
         gpioWrite(_forward, LOW);
         gpioWrite(_backward, LOW);
     }
 
-    int GpioMotor::effort2pwm(float effortPerc) {
+    int MotorLn298::effort2pwm(float effortPerc) {
 
         auto torquePercClipped = effortPerc > 1.0 ? 1.0 : effortPerc;
         torquePercClipped = torquePercClipped < 0.0 ? 0.0 : torquePercClipped;
 
-        return (torquePercClipped * 255.0f);
+        return static_cast<int>(torquePercClipped * 255.0f);
     }
 
-    GpioMotor::~GpioMotor() {
-
-        if (_nInstances <= 1) {
-            gpioTerminate();
-        }
-        _nInstances--;
-    }
-
-    void GpioMotor::initialize() {
+    void MotorLn298::initialize() {
         if (gpioInitialise() < 0) {
             throw std::runtime_error("pigpio initialisation failed\n");
         }

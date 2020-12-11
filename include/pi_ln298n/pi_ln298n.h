@@ -4,5 +4,7 @@
 
 #ifndef PI_LN298N_H
 #define PI_LN298N_H
-#include "GpioMotor.h"
+#include "PiGpio.h"
+#include "MotorLn298.h"
+#include "SonarHcr04.h"
 #endif //SRC_PI_LN298N_H
