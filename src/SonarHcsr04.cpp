@@ -37,7 +37,7 @@ namespace robopi{
         {
             t_stop = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
         }
-        std::cout << "t_stop: " << t_stop << " t_start: " << t_start;
+        std::cout << "\nt_stop: " << t_stop << "\nt_start: " << t_start;
         return {t_stop,t_start};
 
     }
@@ -52,7 +52,8 @@ namespace robopi{
     _echo(echo),
     _trigger(trigger),
     _piGpio(piGpio){
-
+        gpioSetMode(_echo, PI_OUTPUT);
+        gpioSetMode(_trigger, PI_INPUT);
     }
 
 

@@ -6,6 +6,7 @@
 #define PIGPIOSTUB_H
 
 #define PI_OUTPUT 1
+#define PI_INPUT 0
 #define PI_INITIALISED 0
 
 
