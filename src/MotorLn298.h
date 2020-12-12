@@ -6,12 +6,12 @@
 #define GPIOCPP_GPIOWHEEL_H
 #include <memory>
 #include "PiGpio.h"
-namespace pi_ln298n{
+namespace robopi{
 
 class MotorLn298
 {
 public:
-    MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<PiGpio> piGpio);
+    MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<PiGpio> piGpio = robopi::PiGpio::instance());
     void set(float effort);
     void stop();
 protected:

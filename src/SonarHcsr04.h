@@ -8,12 +8,12 @@
 #include <chrono>
 #include <memory>
 #include "PiGpio.h"
-namespace pi_ln298n{
+namespace robopi{
 
     typedef long long int Timestamp;
     constexpr float SPEED_SOUND = 343.0f;
     constexpr float T_TO_M = (1000.0*1000.0*1000.0*SPEED_SOUND/2.0f);
-
+    constexpr float MAX_RANGE = 4.0;
 
     class Measurement{
     public:
@@ -24,6 +24,10 @@ namespace pi_ln298n{
         {
             Timestamp elapsed = _in - _out;
             _distance = static_cast<float>(elapsed)*T_TO_M;
+            if(_distance > MAX_RANGE)
+            {
+                _distance = MAX_RANGE;
+            }
 
         }
         const float& distance() const{
@@ -35,10 +39,10 @@ namespace pi_ln298n{
     };
 
 
-    class SonarHcr04
+    class SonarHcsr04
     {
     public:
-        SonarHcr04(GpioId trigger, GpioId echo,std::shared_ptr<PiGpio> piGpio);
+        SonarHcsr04(GpioId trigger, GpioId echo,std::shared_ptr<PiGpio> piGpio = robopi::PiGpio::instance());
         Measurement measure();
     protected:
         void initialize();

@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <stdio.h>
-#include "pi_ln298n/pi_ln298n.h"
+#include "pi_ln298n/robopi_drivers.h"
 #include <thread>
 
 constexpr int enA = 21;

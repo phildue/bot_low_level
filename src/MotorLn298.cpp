@@ -13,7 +13,7 @@
 #include <iostream>
 constexpr int HIGH = 1;
 constexpr int LOW = 0;
-namespace pi_ln298n {
+namespace robopi {
 
 
     MotorLn298::MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<PiGpio> piGpio) :

@@ -6,5 +6,5 @@
 #define PI_LN298N_H
 #include "PiGpio.h"
 #include "MotorLn298.h"
-#include "SonarHcr04.h"
+#include "SonarHcsr04.h"
 #endif //SRC_PI_LN298N_H

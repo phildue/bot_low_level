@@ -11,7 +11,9 @@
 #endif
 #include <stdexcept>
 #include <iostream>
-namespace pi_ln298n {
+namespace robopi {
+
+    std::shared_ptr<PiGpio> PiGpio::m_instance = nullptr;
 
     PiGpio::PiGpio() {
 
@@ -23,5 +25,15 @@ namespace pi_ln298n {
     PiGpio::~PiGpio() {
         gpioTerminate();
 
+    }
+
+    std::shared_ptr<PiGpio> PiGpio::instance()
+    {
+
+        if(!m_instance){
+            m_instance = std::shared_ptr<PiGpio>(new PiGpio);
+        }
+
+        return m_instance;
     }
 }

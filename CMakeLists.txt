@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(pi_ln298n)
+project(robopi_drivers)
 
 set(CMAKE_CXX_STANDARD 14)
 set(COMPILE_FOR_PI TRUE CACHE BOOL "Set true if compile for pi")
@@ -12,8 +12,8 @@ endif()
 add_library(${PROJECT_NAME} ${target_sources}
         src/MotorLn298.h
         src/MotorLn298.cpp
-        src/SonarHcr04.h
-        src/SonarHcr04.cpp
+        src/SonarHcsr04.h
+        src/SonarHcsr04.cpp
         src/PiGpio.cpp src/PiGpio.h)
 
 if(COMPILE_FOR_PI)

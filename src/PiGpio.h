@@ -4,15 +4,21 @@
 
 #ifndef SRC_PIGPIO_H
 #define SRC_PIGPIO_H
-namespace pi_ln298n {
+
+#include <memory>
+
+namespace robopi {
 
     using GpioId = unsigned int;
 
     class PiGpio {
     public:
-        PiGpio();
-
+        static std::shared_ptr<PiGpio> instance();
         ~PiGpio();
+    private:
+        PiGpio();
+        static std::shared_ptr<PiGpio> m_instance;
+
     };
 }
 
