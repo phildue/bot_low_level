@@ -16,29 +16,35 @@ constexpr int HIGH = 1;
 constexpr int LOW = 0;
 namespace robopi{
 
+    void SonarHcsr04::echo(int gpio, int level, uint32_t tick)
+    {
+        if (level == HIGH)
+        {
+            m_start = tick;
+            std::cout << "Trigger High" << std::endl;
+        }
+        else if (level == LOW)
+        {
+            m_measurement = Measurement(m_start,tick);
+            std::cout << "Trigger Low" << std::endl;
+        }
+    }
+
+
+    void echoEx(int gpio, int level, uint32_t tick, void *user)
+    {
+        auto sonar = (SonarHcsr04*)user;
+        sonar->echo(gpio,level,tick);
+    }
+
 
     Measurement SonarHcsr04::measure()
     {
         initialize();
 
-        gpioWrite(_trigger, HIGH);
-        std::this_thread::sleep_for(std::chrono::microseconds(10));
-        gpioWrite(_trigger, LOW);
+        trigger();
 
-        using namespace std::chrono;
-        Timestamp t_start = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count(),t_stop = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
-
-        //Wait for return signal but no longer than 1ms second each to avoid dead lock in case of failures
-        for(int i = 0; i < 10000 && gpioRead(_echo) == 0; i++)
-        {
-            t_start = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
-        }
-        for(int i = 0; i < 10000 && gpioRead(_echo) == 1; i++)
-        {
-            t_stop = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
-        }
-        std::cout << "\nt_stop: " << t_stop << "\nt_start: " << t_start;
-        return {t_stop,t_start};
+        return m_measurement;
 
     }
 
@@ -51,9 +57,15 @@ namespace robopi{
     SonarHcsr04::SonarHcsr04(GpioId trigger, GpioId echo, std::shared_ptr<PiGpio> piGpio):
     _echo(echo),
     _trigger(trigger),
-    _piGpio(piGpio){
+    _piGpio(piGpio),
+    m_measurement(0,0),
+    m_start(0){
         gpioSetMode(_echo, PI_OUTPUT);
         gpioSetMode(_trigger, PI_INPUT);
+
+
+        gpioSetAlertFuncEx(_echo, echoEx,this);
+
     }
 
 

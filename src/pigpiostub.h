@@ -14,7 +14,10 @@
 int gpioInitialise();
 void gpioSetMode(int pin,int sig);
 
-
+void gpioDelay(int i);
+void gpioSetAlertFunc(int,void);
+void gpioSetAlertFuncEx(int,void*,void*);
+void gpioSetTimerFunc(int,void);
 void gpioWrite(int pin,int sig);
 void gpioPWM(int pin,float sig);
 int gpioRead(int pin);

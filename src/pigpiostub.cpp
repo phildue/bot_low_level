@@ -9,6 +9,10 @@
 #define PI_INITIALISED 0
 #include <vector>
 #include <iostream>
+#include <chrono>
+#include <thread>
+#include "pigpiostub.h"
+
 
 static float pwmDutyCycle = 0;
 static std::vector<float> pins = std::vector<float>(50);
@@ -56,4 +60,9 @@ float gpioGetPWMdutycycle(int pin)
 void gpioSetPWMfrequency(int pin,int freq)
 {
 }
+
+void gpioDelay(int i) {
+    std::this_thread::sleep_for(std::chrono::microseconds(i));
+}
+
 #endif //PIGPIOSTUB_H

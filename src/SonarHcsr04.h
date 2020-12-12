@@ -44,10 +44,13 @@ namespace robopi{
     public:
         SonarHcsr04(GpioId trigger, GpioId echo,std::shared_ptr<PiGpio> piGpio = robopi::PiGpio::instance());
         Measurement measure();
+        void echo(int gpio, int level, uint32_t tick);
     protected:
         void initialize();
-
+        void trigger();
         GpioId _trigger,_echo;
+        Measurement m_measurement;
+        Timestamp m_start;
         std::shared_ptr<PiGpio> _piGpio;
     };
 
