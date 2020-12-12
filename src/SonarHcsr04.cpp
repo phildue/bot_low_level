@@ -10,6 +10,8 @@
 #endif
 #include <thread>
 #include <chrono>
+#include <iostream>
+
 constexpr int HIGH = 1;
 constexpr int LOW = 0;
 namespace robopi{
@@ -27,17 +29,15 @@ namespace robopi{
         Timestamp t_start = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count(),t_stop = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
 
         //Wait for return signal but no longer than 1ms second each to avoid dead lock in case of failures
-        for(int i = 0; i < 1000 && gpioRead(_echo) == 0; i++)
+        for(int i = 0; i < 10000 && gpioRead(_echo) == 0; i++)
         {
-            t_start += 1;
-            std::this_thread::sleep_for(std::chrono::microseconds(1));
+            t_start = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
         }
-        for(int i = 0; i < 1000 && gpioRead(_echo) == 1; i++)
+        for(int i = 0; i < 10000 && gpioRead(_echo) == 1; i++)
         {
-            t_stop += 1;
-            std::this_thread::sleep_for(std::chrono::microseconds(1));
+            t_stop = duration_cast<microseconds>(system_clock::now().time_since_epoch()).count();
         }
-
+        std::cout << "t_stop: " << t_stop << " t_start: " << t_start;
         return {t_stop,t_start};
 
     }
