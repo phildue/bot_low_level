@@ -18,16 +18,25 @@ namespace robopi{
 
     void SonarHcsr04::echo(int gpio, int level, uint32_t tick)
     {
-        if (level == HIGH)
+        if (level == PI_ON)
         {
             m_start = tick;
-            std::cout << "Trigger High" << std::endl;
         }
-        else if (level == LOW)
+        else if (level == PI_OFF)
         {
             m_measurement = Measurement(m_start,tick);
-            std::cout << "Trigger Low" << std::endl;
-        }
+        }else
+	{
+	}
+    }
+
+    void SonarHcsr04::trigger()
+    {
+	gpioWrite(_trigger, PI_ON);
+
+        gpioDelay(10); /* 10us trigger pulse */
+
+        gpioWrite(_trigger, PI_OFF);
     }
 
 
@@ -37,13 +46,13 @@ namespace robopi{
         sonar->echo(gpio,level,tick);
     }
 
-
+    void triggerEx(void* user)
+    {
+       auto sonar = (SonarHcsr04*)user;
+       sonar->trigger();
+    }
     Measurement SonarHcsr04::measure()
     {
-        initialize();
-
-        trigger();
-
         return m_measurement;
 
     }
@@ -60,12 +69,12 @@ namespace robopi{
     _piGpio(piGpio),
     m_measurement(0,0),
     m_start(0){
-        gpioSetMode(_echo, PI_OUTPUT);
-        gpioSetMode(_trigger, PI_INPUT);
+        gpioSetMode(_echo, PI_INPUT);
+        gpioSetMode(_trigger, PI_OUTPUT);
 
 
         gpioSetAlertFuncEx(_echo, echoEx,this);
-
+        gpioSetTimerFuncEx(0, 50, triggerEx,this);
     }
 
 
