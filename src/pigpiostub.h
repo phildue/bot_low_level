@@ -9,15 +9,15 @@
 #define PI_INPUT 0
 #define PI_INITIALISED 0
 
-
+#define PI_ON 1
+#define PI_OFF 0
 
 int gpioInitialise();
 void gpioSetMode(int pin,int sig);
 
 void gpioDelay(int i);
-void gpioSetAlertFunc(int,void);
 void gpioSetAlertFuncEx(int,void*,void*);
-void gpioSetTimerFunc(int,void);
+void gpioSetTimerFuncEx(int,int,void*);
 void gpioWrite(int pin,int sig);
 void gpioPWM(int pin,float sig);
 int gpioRead(int pin);

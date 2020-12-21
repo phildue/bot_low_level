@@ -12,9 +12,20 @@
 #include <chrono>
 #include <iostream>
 
-constexpr int HIGH = 1;
-constexpr int LOW = 0;
 namespace robopi{
+
+
+    void echoEx(int gpio, int level, uint32_t tick, void *user)
+    {
+        auto sonar = (SonarHcsr04*)user;
+        sonar->echo(gpio,level,tick);
+    }
+
+    void triggerEx(void* user)
+    {
+        auto sonar = (SonarHcsr04*)user;
+        sonar->trigger();
+    }
 
     void SonarHcsr04::echo(int gpio, int level, uint32_t tick)
     {
@@ -40,17 +51,7 @@ namespace robopi{
     }
 
 
-    void echoEx(int gpio, int level, uint32_t tick, void *user)
-    {
-        auto sonar = (SonarHcsr04*)user;
-        sonar->echo(gpio,level,tick);
-    }
 
-    void triggerEx(void* user)
-    {
-       auto sonar = (SonarHcsr04*)user;
-       sonar->trigger();
-    }
     Measurement SonarHcsr04::measure()
     {
         return m_measurement;
@@ -72,9 +73,10 @@ namespace robopi{
         gpioSetMode(_echo, PI_INPUT);
         gpioSetMode(_trigger, PI_OUTPUT);
 
-
+#ifdef COMPILE_FOR_PI
         gpioSetAlertFuncEx(_echo, echoEx,this);
         gpioSetTimerFuncEx(0, 50, triggerEx,this);
+#endif
     }
 
 
