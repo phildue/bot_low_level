@@ -11,16 +11,15 @@
 #endif
 #include <stdexcept>
 #include <iostream>
-constexpr int HIGH = 1;
-constexpr int LOW = 0;
 namespace robopi {
 
 
-    MotorLn298::MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<PiGpio> piGpio) :
+    MotorLn298::MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<PiGpio> piGpio,float maxVel) :
             _forward(forward),
             _backward(backward),
             _enable(enable),
-            _piGpio(piGpio)
+            _piGpio(piGpio),
+            _maxVel(maxVel)
             {
 
 
@@ -31,41 +30,41 @@ namespace robopi {
         gpioSetPWMfrequency(_enable,1000);
     }
 
-    void MotorLn298::set(float torquePerc) {
+    void MotorLn298::set(float velocity) {
         initialize();
-        if (torquePerc > 0) {
-            forward(torquePerc);
+        if (velocity > 0) {
+            forward(velocity);
         } else {
-            backward(std::abs(torquePerc));
+            backward(std::abs(velocity));
         }
     }
 
-    void MotorLn298::forward(float effortPerc) {
-        auto pwm = effort2pwm(effortPerc);
+    void MotorLn298::forward(float velocity) {
+        auto pwm = vel2pwm(velocity);
         gpioPWM(_enable, pwm);
-        gpioWrite(_forward, HIGH);
-        gpioWrite(_backward, LOW);
+        gpioWrite(_forward, PI_ON);
+        gpioWrite(_backward, PI_OFF);
     }
 
-    void MotorLn298::backward(float effortPerc) {
-        auto pwm = effort2pwm(effortPerc);
+    void MotorLn298::backward(float velocity) {
+        auto pwm = vel2pwm(velocity);
         gpioPWM(_enable, pwm);
-        gpioWrite(_forward, LOW);
-        gpioWrite(_backward, HIGH);
+        gpioWrite(_forward, PI_OFF);
+        gpioWrite(_backward, PI_ON);
     }
 
     void MotorLn298::stop() {
         initialize();
-        gpioWrite(_forward, LOW);
-        gpioWrite(_backward, LOW);
+        gpioWrite(_forward, PI_OFF);
+        gpioWrite(_backward, PI_OFF);
     }
 
-    int MotorLn298::effort2pwm(float effortPerc) {
+    int MotorLn298::vel2pwm(float velocity) {
+        float dutyCycle = velocity/_maxVel;
+        float dutyCycleClipped = dutyCycle > 1.0 ? 1.0 : dutyCycle;
+        dutyCycle = dutyCycleClipped < 0.0 ? 0.0 : dutyCycleClipped;
 
-        auto torquePercClipped = effortPerc > 1.0 ? 1.0 : effortPerc;
-        torquePercClipped = torquePercClipped < 0.0 ? 0.0 : torquePercClipped;
-
-        return static_cast<int>(torquePercClipped * 255.0f);
+        return static_cast<int>(dutyCycle * 255.0f);
     }
 
     void MotorLn298::initialize() {
