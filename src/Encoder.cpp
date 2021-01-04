@@ -14,7 +14,7 @@
 
 namespace robopi{
 
-    void tickEx(void* user)
+    void tickEx(int gpio,int level, uint32_t tick, void* user)
     {
         auto enc = (Encoder*)user;
         enc->tick();
