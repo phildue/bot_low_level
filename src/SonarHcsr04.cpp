@@ -75,7 +75,7 @@ namespace robopi{
 
 #ifdef COMPILE_FOR_PI
         gpioSetAlertFuncEx(_echo, echoEx,this);
-        gpioSetTimerFuncEx(0, 50, triggerEx,this);
+        piGpio->setTimerFuncEx(50, triggerEx,this);
 #endif
     }
 

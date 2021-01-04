@@ -4,11 +4,7 @@
 
 #include "PiGpio.h"
 
-#ifdef COMPILE_FOR_PI
-#include <pigpio.h>
-#else
-#include <pigpiostub.h>
-#endif
+
 #include <stdexcept>
 #include <iostream>
 namespace robopi {
@@ -20,6 +16,7 @@ namespace robopi {
         if (gpioInitialise() < 0) {
             throw std::runtime_error("pigpio initialisation failed\n");
         }
+        _timerCtr = 0;
     }
 
     PiGpio::~PiGpio() {
@@ -36,4 +33,10 @@ namespace robopi {
 
         return m_instance;
     }
+
+    void PiGpio::setTimerFuncEx(int frqMs,gpioTimerFuncEx_t f, void* user)
+    {
+        gpioSetTimerFuncEx(_timerCtr++,frqMs,f,user);
+    }
+
 }

@@ -11,23 +11,32 @@
 #include "PiGpio.h"
 namespace robopi{
 
-    constexpr float TICKS_TO_ANGLE = M_PI/10;
 
     class Encoder
     {
     public:
         Encoder(GpioId in, std::shared_ptr<PiGpio> piGpio = robopi::PiGpio::instance());
-        const float& position() const {return _angle;}
-        void tick();
-        void reset() {_angle = 0;};
+
+        float wheelTicks() const {return _wheelTicks;}
+
+        float position() const;
+
+        float velocity() const;
+
+        void flag(uint32_t tick);
+        void vel();
+        void reset() {_wheelTicks = 0;};
         void reverseDirection(){_direction = !_direction;}
 
     protected:
         void initialize();
         GpioId _in;
         std::shared_ptr<PiGpio> _piGpio;
-        float _angle;
+        float _wheelTicksLast,_velocityTicks;
+        long long _wheelTicks;
         bool _direction;
+        long long _lastTick;
+        float _frq;
 
     };
 

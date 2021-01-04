@@ -24,7 +24,8 @@ namespace robopi{
          * @param velocity in rad/s
          */
         void set(float velocity) {
-            if(sgn<float>(velocity) != sgn<float>(_setPoint)){
+            if((velocity < 0 && _setPoint > 0) ||
+                    (velocity > 0 && _setPoint < 0)){
                 _encoder.reverseDirection();
             }
             _setPoint = velocity;
@@ -37,14 +38,23 @@ namespace robopi{
          */
         float position() const {return _encoder.position();}
 
+        /**
+         * Get position from encoder
+         * @return position in wheel ticks
+         */
+        float wheelTicks() const {return _encoder.wheelTicks();}
+
+
+        /**
+       * Get angular velocity from encoder
+       * @return velocity in rad/s
+       */
+        float velocity() const {return _encoder.velocity();}
+
         void stop(){return _motor.stop();}
 
         const float& maxVel() const {return _motor.maxVel();}
     protected:
-
-        template <typename T> int sgn(T val) {
-            return (T(0) < val) - (val < T(0));
-        }
 
         MotorLn298 _motor;
         Encoder _encoder;

@@ -12,6 +12,9 @@
 #define PI_ON 1
 #define PI_OFF 0
 
+typedef void (*gpioTimerFunc_t) (void);
+typedef void (*gpioTimerFuncEx_t) (void *userdata);
+
 int gpioInitialise();
 void gpioSetMode(int pin,int sig);
 
