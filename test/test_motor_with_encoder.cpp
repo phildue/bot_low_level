@@ -15,8 +15,8 @@ constexpr int in4 = 19;
 using namespace robopi;
 int main(int argc, char *argv[])
 {
-    MotorLn298 left(in1,in2,enA);
-    MotorLn298 right(in4,in3,enB);
+    MotorLn298Enc left(in1,in2,enA,2);
+    MotorLn298Enc right(in4,in3,enB,5);
 
     auto start = std::chrono::system_clock::now();
 
@@ -24,13 +24,15 @@ int main(int argc, char *argv[])
     {
         left.set((float)i/60.0f*MAX_VEL_DF_DC);
         right.set(-1.0f * (float)i/60.0f*MAX_VEL_DF_DC);
-	std::this_thread::sleep_for (std::chrono::milliseconds(500));
+    	std::this_thread::sleep_for (std::chrono::milliseconds(500));
+    	std::cout << "Position: " << left.position() << " | " << right.position() << "rad" << std::endl;
     }
     for(int i = 60; i > 0; i--)
     {
         left.set((float)i/60.0f*MAX_VEL_DF_DC);
         right.set((float)-i/60.0f*MAX_VEL_DF_DC);
-	std::this_thread::sleep_for (std::chrono::milliseconds(500));
+    	std::this_thread::sleep_for (std::chrono::milliseconds(500));
+        std::cout << "Position: " << left.position() << " | " << right.position() << "rad" << std::endl;
     }
     left.stop();
     right.stop();
