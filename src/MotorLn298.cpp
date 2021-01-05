@@ -14,12 +14,11 @@
 namespace robopi {
 
 
-    MotorLn298::MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<PiGpio> piGpio,float maxVel) :
+    MotorLn298::MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<PiGpio> piGpio) :
             _forward(forward),
             _backward(backward),
             _enable(enable),
-            _piGpio(piGpio),
-            _maxVel(maxVel)
+            _piGpio(piGpio)
             {
 
 
@@ -30,24 +29,24 @@ namespace robopi {
         gpioSetPWMfrequency(_enable,1000);
     }
 
-    void MotorLn298::set(float velocity) {
+    void MotorLn298::set(float dutyCycle) {
         initialize();
-        if (velocity > 0) {
-            forward(velocity);
+        if (dutyCycle > 0) {
+            forward(dutyCycle);
         } else {
-            backward(std::abs(velocity));
+            backward(std::abs(dutyCycle));
         }
     }
 
-    void MotorLn298::forward(float velocity) {
-        auto pwm = vel2pwm(velocity);
+    void MotorLn298::forward(float dutyCycle) {
+        auto pwm = convert(dutyCycle);
         gpioPWM(_enable, pwm);
         gpioWrite(_forward, PI_ON);
         gpioWrite(_backward, PI_OFF);
     }
 
-    void MotorLn298::backward(float velocity) {
-        auto pwm = vel2pwm(velocity);
+    void MotorLn298::backward(float dutyCycle) {
+        auto pwm = convert(dutyCycle);
         gpioPWM(_enable, pwm);
         gpioWrite(_forward, PI_OFF);
         gpioWrite(_backward, PI_ON);
@@ -59,8 +58,7 @@ namespace robopi {
         gpioWrite(_backward, PI_OFF);
     }
 
-    int MotorLn298::vel2pwm(float velocity) {
-        float dutyCycle = velocity/_maxVel;
+    int MotorLn298::convert(float dutyCycle) {
         float dutyCycleClipped = dutyCycle > 1.0 ? 1.0 : dutyCycle;
         dutyCycle = dutyCycleClipped < 0.0 ? 0.0 : dutyCycleClipped;
 

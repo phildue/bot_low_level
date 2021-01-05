@@ -11,6 +11,7 @@ endif()
 
 add_library(${PROJECT_NAME} ${target_sources}
         src/MotorLn298.h
+        src/MotorLn298Enc.cpp
         src/MotorLn298Enc.h
         src/MotorLn298.cpp
         src/SonarHcsr04.h
@@ -20,7 +21,7 @@ add_library(${PROJECT_NAME} ${target_sources}
         src/PiGpio.cpp src/PiGpio.h)
 
 if(COMPILE_FOR_PI)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE COMPILE_FOR_PI)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC COMPILE_FOR_PI)
 endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC src)
@@ -33,8 +34,18 @@ endif()
 if(COMPILE_TESTS)
     add_executable(test_motor test/test_motor.cpp)
     add_executable(test_motor_with_encoder test/test_motor_with_encoder.cpp)
+    add_executable(exp_pwm_to_rad test/exp_pwm_to_rad.cpp)
+    add_executable(test_pid test/test_pid.cpp)
+    add_executable(test_encoder test/test_encoder.cpp)
+
     target_link_libraries(test_motor ${PROJECT_NAME})
     target_link_libraries(test_motor_with_encoder ${PROJECT_NAME})
+    target_link_libraries(exp_pwm_to_rad ${PROJECT_NAME})
+    target_link_libraries(test_pid ${PROJECT_NAME})
+    find_package(Threads REQUIRED)
+    target_link_libraries(test_pid Threads::Threads)
+    target_link_libraries(test_encoder ${PROJECT_NAME})
+
 endif()
 
 

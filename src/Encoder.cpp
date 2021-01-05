@@ -13,8 +13,7 @@
 #include <iostream>
 
 constexpr float TICK_TO_S = (1/(1000.0));
-constexpr float COUNT_TO_RAD = M_PI/10;
-constexpr float MAX_WHEELTICKS = std::numeric_limits<float>::max();
+constexpr float COUNT_TO_RAD = M_PI/5;
 constexpr float TICKS_US_TO_RAD_S = COUNT_TO_RAD / TICK_TO_S;
 
 namespace robopi{
@@ -22,13 +21,12 @@ namespace robopi{
     void flagEx(int gpio,int level, uint32_t tick, void* user)
     {
         Encoder* enc = (Encoder*)user;
-        enc->flag(tick);
-    }
 
-    void velEx(void* user)
-    {
-        Encoder* enc = (Encoder*)user;
-        enc->vel();
+        if(level == 0)
+        {
+            enc->flag(tick);
+        }
+        enc->vel(tick);
     }
 
     void Encoder::flag(uint32_t tick)
@@ -36,17 +34,19 @@ namespace robopi{
         _direction ? _wheelTicks++ : _wheelTicks--;
     }
 
-    void Encoder::vel()
+    void Encoder::vel(uint32_t tick)
     {
-        auto position = _wheelTicks;
-        float deltaTicks = static_cast<float>(position - _wheelTicksLast);
+        int32_t deltaWheelTicks = int32_t(_wheelTicks - _lastWheelTick);
+        int32_t deltaTicks = int32_t(tick - _lastTick);
 
-        if(deltaTicks < 1000)//in case of overflow skip computation for this time
+        if(std::abs(deltaWheelTicks) < 1000 && deltaTicks > 0)//in case of overflow skip computation for this time
         {
-            _velocityTicks = deltaTicks/_frq;
+            _deltaWheelTicks = deltaWheelTicks;
+            _deltaTicks = deltaTicks;
         }
 
-        _wheelTicksLast = position;
+        _lastTick = tick;
+        _lastWheelTick = _wheelTicks;
 
     }
 
@@ -69,23 +69,25 @@ namespace robopi{
 
     float Encoder::velocity() const
     {
-        return _velocityTicks * TICKS_US_TO_RAD_S;
+        return ((float)_deltaWheelTicks/(float)_deltaTicks) * TICKS_US_TO_RAD_S;
     }
 
-    Encoder::Encoder(GpioId in, std::shared_ptr<PiGpio> piGpio):
+    Encoder::Encoder(GpioId in,uint32_t timeout, std::shared_ptr<PiGpio> piGpio):
     _in(in),
     _piGpio(piGpio),
     _wheelTicks(0.0f),
-    _velocityTicks(0.0f),
-    _frq(50),
+    _deltaWheelTicks(0),
+    _deltaTicks(1),
+    _lastTick(0),
+    _lastWheelTick(0),
+    _timeout(timeout),
     _direction(true){
         gpioSetMode(_in, PI_INPUT);
 
-#ifdef COMPILE_FOR_PI
-        gpioSetAlertFuncEx(_in, flagEx,this);
-        piGpio->setTimerFuncEx(_frq, velEx,this);
+        gpioSetISRFuncEx(_in,FALLING_EDGE,_timeout,flagEx,this);
+        //gpioSetAlertFuncEx(_in, flagEx,this);
+        //piGpio->setTimerFuncEx(_frq, velEx,this);
 
-#endif
     }
 
 

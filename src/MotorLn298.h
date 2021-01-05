@@ -8,21 +8,19 @@
 #include "PiGpio.h"
 namespace robopi{
 
-    constexpr float MAX_VEL_DF_DC = 16.755;//rad_s
 
     class MotorLn298
 {
 public:
-    MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<PiGpio> piGpio = robopi::PiGpio::instance(),float maxVel = MAX_VEL_DF_DC);
+    MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<PiGpio> piGpio = robopi::PiGpio::instance());
     /**
-     * Set angular velocity
-     * @param velocity in rad/s
+     * Pass set point
+     * @param pwm duty cycle -1.0 to 1.0
      */
-    void set(float velocity);
+    void set(float dutyCycle);
 
     void stop();
 
-    const float& maxVel() const {return _maxVel;}
 protected:
     /**
      * Initialize gpios
@@ -31,26 +29,25 @@ protected:
 
     /**
      * Spin forward
-     * @param velocity in rad/s
+     * @param duty cycle 0.0 -> 1.0
      */
     void forward(float velocity);
 
     /**
      * Spin backward
-     * @param velocity in rad/s
+     * @param duty cycle 0.0 -> 1.0
      */
     void backward(float velocity);
 
     /**
-     * Convert angular velocity to pwm duty cycle
-     * @param velocity in rad/s
+     * Convert duty cycle to appropriate range.
+     * @param duty cycle 0.0 -> 1.0
      * @return pwm duty in cycle in 0 [0%] -> 255 [100%]
      */
-    int vel2pwm(float velocity);
+    int convert(float velocity);
 
     GpioId _forward,_backward,_enable;
     std::shared_ptr<PiGpio> _piGpio;
-    const float _maxVel;
 };
 
 }

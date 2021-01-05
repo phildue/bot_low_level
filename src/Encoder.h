@@ -15,16 +15,16 @@ namespace robopi{
     class Encoder
     {
     public:
-        Encoder(GpioId in, std::shared_ptr<PiGpio> piGpio = robopi::PiGpio::instance());
+        Encoder(GpioId in, uint32_t timeout, std::shared_ptr<PiGpio> piGpio = robopi::PiGpio::instance());
 
-        float wheelTicks() const {return _wheelTicks;}
+        long long wheelTicks() const {return _wheelTicks;}
 
         float position() const;
 
         float velocity() const;
 
         void flag(uint32_t tick);
-        void vel();
+        void vel(uint32_t tick);
         void reset() {_wheelTicks = 0;};
         void reverseDirection(){_direction = !_direction;}
 
@@ -32,11 +32,12 @@ namespace robopi{
         void initialize();
         GpioId _in;
         std::shared_ptr<PiGpio> _piGpio;
-        float _wheelTicksLast,_velocityTicks;
         long long _wheelTicks;
         bool _direction;
-        long long _lastTick;
-        float _frq;
+        float _timeout;
+        int32_t _deltaWheelTicks,_deltaTicks;
+        uint32_t _lastWheelTick,_lastTick;
+
 
     };
 

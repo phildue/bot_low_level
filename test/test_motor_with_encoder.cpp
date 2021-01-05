@@ -10,6 +10,8 @@ constexpr int in1 = 20;
 constexpr int in2 = 16;
 constexpr int in3 = 26;
 constexpr int in4 = 19;
+constexpr int encLeft = 5;
+constexpr int encRight = 2;
 
 #include <chrono>
 #include <cmath>
@@ -24,8 +26,12 @@ float mean(const std::vector<float>& sample, int idxFrom, int idxTo)
 
 int main(int argc, char *argv[])
 {
-    MotorLn298Enc right(in1,in2,enA,2);
-    MotorLn298Enc left(in4,in3,enB,5);
+    float dT = 0.050;
+    float kp = 0.001;
+    float kd = 0.0;
+    float ki = 0.0;
+    MotorLn298Enc right(in1,in2,enA,encRight,dT,kp,kd,ki);
+    MotorLn298Enc left(in4,in3,enB,encLeft,dT,kp,kd,ki);
 
     try {
 
@@ -34,8 +40,8 @@ int main(int argc, char *argv[])
         float steps = 15;
         velLeft.reserve(steps*2);
         velRight.reserve(steps*2);
-        left.set(M_PI);
-        right.set(-M_PI);
+        left.set(2*M_PI);
+        right.set(-2*M_PI);
        // left.set(0);
        // right.set(0);
 
