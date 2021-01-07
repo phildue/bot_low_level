@@ -31,20 +31,20 @@ protected:
      * Spin forward
      * @param duty cycle 0.0 -> 1.0
      */
-    void forward(float velocity);
+    void forward(float dutyCycle);
 
     /**
      * Spin backward
      * @param duty cycle 0.0 -> 1.0
      */
-    void backward(float velocity);
+    void backward(float dutyCycle);
 
     /**
      * Convert duty cycle to appropriate range.
      * @param duty cycle 0.0 -> 1.0
      * @return pwm duty in cycle in 0 [0%] -> 255 [100%]
      */
-    int convert(float velocity);
+    int convert(float dutyCycle);
 
     GpioId _forward,_backward,_enable;
     std::shared_ptr<PiGpio> _piGpio;

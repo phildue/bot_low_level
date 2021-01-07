@@ -13,7 +13,7 @@
 #include <iostream>
 
 constexpr float TICK_TO_S = (1/(1000.0));
-constexpr float COUNT_TO_RAD = M_PI/5;
+constexpr float COUNT_TO_RAD = M_PI/5.0f;
 constexpr float TICKS_US_TO_RAD_S = COUNT_TO_RAD / TICK_TO_S;
 
 namespace robopi{
@@ -22,11 +22,16 @@ namespace robopi{
     {
         Encoder* enc = (Encoder*)user;
 
-        if(level == 0)
+        if(gpio == enc->gpioIn())
         {
-            enc->flag(tick);
+            if(level == 0)
+            {
+                enc->flag(tick);
+            }
+            enc->vel(tick);
+            enc->tickHandler->handleTick(tick,enc->wheelTicks(),enc->velocity());
         }
-        enc->vel(tick);
+        
     }
 
     void Encoder::flag(uint32_t tick)
@@ -85,8 +90,8 @@ namespace robopi{
         gpioSetMode(_in, PI_INPUT);
 
         gpioSetISRFuncEx(_in,FALLING_EDGE,_timeout,flagEx,this);
-        //gpioSetAlertFuncEx(_in, flagEx,this);
-        //piGpio->setTimerFuncEx(_frq, velEx,this);
+        gpioSetPullUpDown(_in, PI_PUD_UP);
+
 
     }
 

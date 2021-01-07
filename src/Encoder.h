@@ -11,11 +11,16 @@
 #include "PiGpio.h"
 namespace robopi{
 
+    class TickHandler
+    {
+    public:
+        virtual void handleTick(uint32_t tick, long long wheelTicks, float velocity) = 0;
+    };
 
     class Encoder
     {
     public:
-        Encoder(GpioId in, uint32_t timeout, std::shared_ptr<PiGpio> piGpio = robopi::PiGpio::instance());
+        Encoder(GpioId in, uint32_t timeout = 0, std::shared_ptr<PiGpio> piGpio = robopi::PiGpio::instance());
 
         long long wheelTicks() const {return _wheelTicks;}
 
@@ -23,11 +28,14 @@ namespace robopi{
 
         float velocity() const;
 
+        const GpioId& gpioIn() const { return _in;}
+
         void flag(uint32_t tick);
         void vel(uint32_t tick);
         void reset() {_wheelTicks = 0;};
-        void reverseDirection(){_direction = !_direction;}
+        void setDirection(bool forward){_direction = forward;}
 
+        TickHandler* tickHandler;
     protected:
         void initialize();
         GpioId _in;

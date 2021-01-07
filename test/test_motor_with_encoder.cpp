@@ -35,13 +35,12 @@ int main(int argc, char *argv[])
 
     try {
 
-        auto start = std::chrono::system_clock::now();
         std::vector<float> velLeft,velRight;
         float steps = 15;
         velLeft.reserve(steps*2);
         velRight.reserve(steps*2);
-        left.set(2*M_PI);
-        right.set(-2*M_PI);
+        left.set(M_PI);
+        right.set(M_PI);
        // left.set(0);
        // right.set(0);
 

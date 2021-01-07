@@ -11,8 +11,8 @@ endif()
 
 add_library(${PROJECT_NAME} ${target_sources}
         src/MotorLn298.h
-        src/MotorLn298Enc.cpp
-        src/MotorLn298Enc.h
+        src/MotorVelocityControl.cpp
+        src/MotorVelocityControl.h
         src/MotorLn298.cpp
         src/SonarHcsr04.h
         src/SonarHcsr04.cpp
@@ -33,18 +33,18 @@ endif()
 
 if(COMPILE_TESTS)
     add_executable(test_motor test/test_motor.cpp)
-    add_executable(test_motor_with_encoder test/test_motor_with_encoder.cpp)
     add_executable(exp_pwm_to_rad test/exp_pwm_to_rad.cpp)
     add_executable(test_pid test/test_pid.cpp)
     add_executable(test_encoder test/test_encoder.cpp)
+    add_executable(test_velocity_measurement test/test_velocity_measurement.cpp)
 
     target_link_libraries(test_motor ${PROJECT_NAME})
-    target_link_libraries(test_motor_with_encoder ${PROJECT_NAME})
     target_link_libraries(exp_pwm_to_rad ${PROJECT_NAME})
     target_link_libraries(test_pid ${PROJECT_NAME})
     find_package(Threads REQUIRED)
     target_link_libraries(test_pid Threads::Threads)
     target_link_libraries(test_encoder ${PROJECT_NAME})
+    target_link_libraries(test_velocity_measurement ${PROJECT_NAME})
 
 endif()
 
