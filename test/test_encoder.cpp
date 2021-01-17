@@ -20,26 +20,32 @@ using namespace robopi;
 
 static volatile bool keepRunning = true;
 
+void sigHandler(int signal)
+{
+    keepRunning = false;
+}
 int main(int argc, char *argv[])
 {
    
-    Encoder encoder(encLeft,500);
-    const int nSamples = 100;
+    Encoder encoderLeft(encLeft,0);
+    Encoder encoderRight(encRight,0);
+
+    gpioSetSignalFunc(SIGINT,sigHandler);
+    const int nSamples = 20*5;
     const int sampleMs = 50;
-    std::vector<float> wheelTicks(nSamples);
-    std::vector<float> velocity(nSamples);
+    std::vector<float> ticksLeft(nSamples),ticksRight(nSamples);
     
     for(int i = 0; i < nSamples; i++)
     {
-        wheelTicks[i] = encoder.wheelTicks();
-        velocity[i] = encoder.velocity();
+        ticksLeft[i] = encoderLeft.wheelTicks();
+        ticksRight[i] = encoderRight.wheelTicks();
 
         std::this_thread::sleep_for (std::chrono::milliseconds(sampleMs));
     }
 
     for(int i = 0; i < nSamples; i++)
     {
-        std::cout << "Ticks: " << wheelTicks[i] << " | V = " << velocity[i] << std::endl;
+        std::cout << "Ticks: " << ticksLeft[i] << " | " << ticksRight[i] << std::endl;
 
     }
 

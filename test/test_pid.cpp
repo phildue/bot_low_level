@@ -24,11 +24,11 @@ void sigHandler(int signal)
 {
     keepRunning = false;
 }
-const float dT = 0.05;
+const float dT = 0.001;
 const float T = 30.0f;
 const int nIterations = (int)(T/dT);
 const int dT_ms =(int) (dT*1000.0f);
-const float setPoint = M_2_PI*8.0f*25.0f;
+const float setPoint = M_2_PI*8.0f*5.0f;
 
 struct MotorLog
 {
@@ -52,22 +52,31 @@ int main(int argc, char *argv[])
 {
     auto pigpio = PiGpio::instance();
     gpioSetSignalFunc(SIGINT,sigHandler);
-    float kp = 0.00001;//0.2;
-    float kd = 0.0;
+    float kp = 0.009;//0.2;
+    float kd = 0.00;
     float ki = 0.00;
+    uint16_t filterSize = 5000;
 
     auto motorRight = std::make_shared<MotorLn298>(in1,in2,enA);
     auto encoderRight = std::make_shared<Encoder>(encRight);
-    auto controlRight = std::make_shared<MotorVelocityControl>(motorRight,encoderRight,kp,kd,ki,30);
+    //auto filterRight = std::make_shared<SlidingAverageFilter>(filterSize);
+    auto filterRight = std::make_shared<LuenbergerObserver>(5.0,7.5);
+
+    auto controlRight = std::make_shared<MotorVelocityControl>(motorRight,encoderRight,filterRight,kp,ki,kd);
 
     auto motorLeft = std::make_shared<MotorLn298>(in4,in3,enB);
     auto encoderLeft = std::make_shared<Encoder>(encLeft);
-    auto controlLeft = std::make_shared<MotorVelocityControl>(motorLeft,encoderLeft,kp,kd,ki,30);
+    //auto filterLeft = std::make_shared<SlidingAverageFilter>(filterSize);
+    auto filterLeft = std::make_shared<LuenbergerObserver>(5.0,7.5);
+
+    auto controlLeft = std::make_shared<MotorVelocityControl>(motorLeft,encoderLeft,filterLeft,kp,ki,kd);
    
     MotorLog logLeft(nIterations),logRight(nIterations); 
     
     controlRight->set(setPoint);
     controlLeft->set(setPoint);
+
+
 
     auto start = std::chrono::high_resolution_clock::now();
     for(int i = 0; i < nIterations && keepRunning; i++)

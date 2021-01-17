@@ -18,41 +18,26 @@ constexpr float TICKS_US_TO_RAD_S = COUNT_TO_RAD / TICK_TO_S;
 
 namespace robopi{
 
-    void flagEx(int gpio,int level, uint32_t tick, void* user)
+    void interruptEx(int gpio,int level, uint32_t tick, void* user)
     {
-        Encoder* enc = (Encoder*)user;
-
-        if(gpio == enc->gpioIn())
+        if(level == FALLING_EDGE)
         {
-            if(level == 0)
-            {
-                enc->flag(tick);
-            }
-            enc->vel(tick);
-            enc->tickHandler->handleTick(tick,enc->wheelTicks(),enc->velocity());
+             Encoder* enc = (Encoder*)user;
+
+             enc->interrupt(gpio,level,tick);
+            
         }
         
     }
 
-    void Encoder::flag(uint32_t tick)
+    void Encoder::interrupt(int gpio,int level, uint32_t tick)
     {
         _direction ? _wheelTicks++ : _wheelTicks--;
-    }
-
-    void Encoder::vel(uint32_t tick)
-    {
-        int32_t deltaWheelTicks = int32_t(_wheelTicks - _lastWheelTick);
-        int32_t deltaTicks = int32_t(tick - _lastTick);
-
-        if(std::abs(deltaWheelTicks) < 1000 && deltaTicks > 0)//in case of overflow skip computation for this time
+        for(const auto& tickHandler : _observers)
         {
-            _deltaWheelTicks = deltaWheelTicks;
-            _deltaTicks = deltaTicks;
+            tickHandler->handleTick(tick,wheelTicks());
         }
-
-        _lastTick = tick;
-        _lastWheelTick = _wheelTicks;
-
+        
     }
 
 
@@ -72,25 +57,24 @@ namespace robopi{
         return angle;
     }
 
-    float Encoder::velocity() const
-    {
-        return ((float)_deltaWheelTicks/(float)_deltaTicks) * TICKS_US_TO_RAD_S;
-    }
-
     Encoder::Encoder(GpioId in,uint32_t timeout, std::shared_ptr<PiGpio> piGpio):
     _in(in),
     _piGpio(piGpio),
-    _wheelTicks(0.0f),
-    _deltaWheelTicks(0),
-    _deltaTicks(1),
-    _lastTick(0),
-    _lastWheelTick(0),
+    _wheelTicks(0U),
     _timeout(timeout),
     _direction(true){
         gpioSetMode(_in, PI_INPUT);
 
-        gpioSetISRFuncEx(_in,FALLING_EDGE,_timeout,flagEx,this);
         gpioSetPullUpDown(_in, PI_PUD_UP);
+        //gpioSetAlertFuncEx(_in,interruptEx,this);
+        gpioSetISRFuncEx(_in,FALLING_EDGE,_timeout,interruptEx,this);
+
+
+    }
+    Encoder::~Encoder()
+    {
+        //gpioSetAlertFunc(_in,NULL);
+        gpioSetISRFuncEx(_in,FALLING_EDGE,_timeout,NULL,this);
 
 
     }

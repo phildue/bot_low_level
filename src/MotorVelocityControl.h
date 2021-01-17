@@ -14,11 +14,64 @@ namespace robopi{
     constexpr float MAX_VEL_DF_DC = 16.755;//rad_s
 
 
+    class VelocityEstimator {
+        public:
+            virtual float estimate(long long pos, float dT) = 0;
+    };
+
+    class SlidingAverageFilter : public VelocityEstimator
+    {
+        public:
+            SlidingAverageFilter(uint16_t size):
+            _size(size),
+            _posLast(0U),
+            _v(0.0f),
+            _idx(0U){
+                _vs.resize(_size);
+                for(int i = 0; i < _size; i++)
+                {
+                    _vs[i] = 0.0f;
+                }
+            }
+            float estimate(long long pos, float dT) override;
+            const float& velocity(){return _v;}
+        private:
+            const float _size;
+            long long _posLast;
+            std::vector<float> _vs;
+            unsigned int _idx;
+            float _v;
+    };
+
+    class LuenbergerObserver : public VelocityEstimator
+    {
+        public:
+            
+            LuenbergerObserver(float kp,float ki):
+            _kp(kp),
+            _ki(ki),
+            _v(0.0f),
+            _velIntegr(0.0f),
+            _posLast(0U){}
+
+            float estimate(long long pos, float dT) override;
+        private:
+
+            long long _posLast;
+            float _velIntegr;
+            float _v,_kp,_ki;
+ 
+    };
+
+
     class MotorVelocityControl : public TickHandler
     {
     public:
-        MotorVelocityControl(std::shared_ptr<MotorLn298> motor,std::shared_ptr<Encoder> encoder, float kp, float ki, float kd,uint16_t filterSize,float maxVel = MAX_VEL_DF_DC):
+        MotorVelocityControl(std::shared_ptr<MotorLn298> motor,std::shared_ptr<Encoder> encoder, std::shared_ptr<VelocityEstimator> velEstimator,
+            float kp, float ki, float kd,float maxVel = MAX_VEL_DF_DC):
         _motor(motor),
+        _velEstimator(velEstimator),
+        _encoder(encoder),
         _kp(kp),
         _ki(ki),
         _kd(kd),
@@ -27,18 +80,9 @@ namespace robopi{
         _tLast(0),
         _velocitySet(0.0),
         _velocityActual(0.0),
-        _dutySet(0.0),
-        _filterIdx(0),
-        _wheelTicksLast(0),
-        _vs(filterSize),
-        _filterSize(static_cast<float>(filterSize)),
-          _encoder(encoder){
-            _encoder->tickHandler = this;
+        _dutySet(0.0){
             
-            for(int i = 0; i < filterSize; i++)
-            {
-                _vs[i] = 0;
-            }
+            
         }
 
         /**
@@ -76,20 +120,19 @@ namespace robopi{
         const float& error() { return _errLast;}
         const float& dutySet() { return _dutySet;}
 
-        void handleTick(uint32_t tick, long long wheelTicks, float velocity);
+        void handleTick(uint32_t tick, long long wheelTicks);
     protected:
 
-        float _kp,_ki,_kd,_filterSize;
+        float _kp,_ki,_kd;
         float _errLast,_errIntegr;
         unsigned long _tLast;
 
         std::shared_ptr<MotorLn298> _motor;
         std::shared_ptr<Encoder> _encoder;
+        std::shared_ptr<VelocityEstimator> _velEstimator;
         float _velocitySet, _dutySet;
         float _velocityActual;
-        long long _wheelTicksLast;
-        std::vector<float> _vs;
-        unsigned int _filterIdx;
+    
     };
 
 }

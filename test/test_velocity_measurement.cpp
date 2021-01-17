@@ -24,7 +24,7 @@ void sigHandler(int signal)
 {
     keepRunning = false;
 }
-const float dT = 0.05;
+const float dT = 0.001;
 const float T = 20.0f;
 const int nIterations = (int)(T/dT);
 const int dT_ms =(int) (dT*1000.0f);
@@ -45,7 +45,7 @@ struct MotorLog : public TickHandler
     std::vector<float> chronoUs;
     std::chrono::time_point<std::chrono::high_resolution_clock> start;
 
-    void handleTick(uint32_t tick, long long wheelTicks, float velocity) override
+    void handleTick(uint32_t tick, long long wheelTicks) override
     {
         position.push_back(wheelTicks);
         gpioTick.push_back(tick);
@@ -64,13 +64,14 @@ int main(int argc, char *argv[])
 
     MotorLn298 motorRight(in1,in2,enA);
     MotorLn298 motorLeft(in4,in3,enB);
-    Encoder encRight(encmotorRight,100);
-    Encoder encLeft(encmotorLeft,100);
+    Encoder encRight(encmotorRight,0);
+    Encoder encLeft(encmotorLeft,0);
     
-    MotorLog logmotorLeft(nIterations*10),logmotorRight(nIterations*10); 
+    auto logMotorRight = std::make_shared<MotorLog>(nIterations*10);
+    auto logMotorLeft = std::make_shared<MotorLog>(nIterations*10); 
 
-    encRight.tickHandler = &logmotorRight;
-    encLeft.tickHandler = &logmotorLeft;
+    encRight.subscribe(logMotorRight);
+    encLeft.subscribe(logMotorLeft);
 
     std::vector<float> t;
     std::vector<float> ticksLeft,ticksRight;
@@ -94,11 +95,11 @@ int main(int argc, char *argv[])
     
     logMotorsFile << "idx, pwm* [%],t_chrono left [us], t_gpio left [us],pos left [ticks],t_chrono right [us], t_gpio right [us],pos right [ticks]\n";
     
-    for(int i = 0; i < logmotorLeft.position.size() && keepRunning; i++)
+    for(int i = 0; i < logMotorLeft->position.size() && keepRunning; i++)
     {
         logMotorsFile << i << "," << setPoint  
-        << "," << logmotorLeft.chronoUs[i] << "," << logmotorLeft.gpioTick[i] << "," << logmotorLeft.position[i]
-        << "," << logmotorRight.chronoUs[i] << "," << logmotorRight.gpioTick[i] << "," << logmotorRight.position[i]
+        << "," << logMotorLeft->chronoUs[i] << "," << logMotorLeft->gpioTick[i] << "," << logMotorLeft->position[i]
+        << "," << logMotorRight->chronoUs[i] << "," << logMotorRight->gpioTick[i] << "," << logMotorRight->position[i]
         << "\n";
     }
 

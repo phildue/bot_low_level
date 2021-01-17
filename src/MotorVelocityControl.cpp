@@ -9,43 +9,66 @@ constexpr float RAD_S_TO_TICKS_US = 1.0f/TICKS_US_TO_RAD_S;
 namespace robopi
 {
 
+    float SlidingAverageFilter::estimate(long long pos, float dT)
+    {
+
+        float dPos = static_cast<float>(pos - _posLast);
+        _posLast = pos;
+
+        float v = dPos/dT;
+
+        _v -= _vs[_idx] / _size;
+
+        _vs[_idx] = v;
+
+        _v += _vs[_idx] / _size;
+
+        _idx++;
+        
+        if(_idx >= _vs.size())
+        {
+            _idx = 0;
+        }
+
+        return _v;
+    }
+
+    float LuenbergerObserver::estimate(long long pos, float dT)
+    {
+
+
+        float posEst = _posLast + _v * dT;
+        float errPos = static_cast<float>(pos - posEst);
+
+        _velIntegr += _ki * errPos * dT;
+
+        _v = _kp * errPos + _velIntegr;
+
+        _posLast = pos;
+
+        return _v;
+    }
+
     void MotorVelocityControl::update(unsigned long t)
     {
-        float dT = static_cast<float>(t - _tLast);
+
+        float dT = static_cast<float>(t - _tLast)*US_TO_S;
         if (dT <= 0.0f)
         {
             return;
         }
         _tLast = t;
-        auto wheelTicks = _encoder->wheelTicks();
-        
-        float dTicks = static_cast<float>(wheelTicks - _wheelTicksLast);
-        _wheelTicksLast = wheelTicks;
-
-        float v = dTicks/dT;
-
-        v *= TICKS_US_TO_RAD_S;
-
-
-        _velocityActual -= _vs[_filterIdx] / _filterSize;
-
-        _vs[_filterIdx] = v;
-
-        _velocityActual += _vs[_filterIdx] / _filterSize;
-
-        _filterIdx++;
-        
-        if(_filterIdx >= _vs.size())
-        {
-            _filterIdx = 0;
-        }
+        const long long pos = _encoder->wheelTicks()*COUNT_TO_RAD;
+      
+        _velocityActual = _velEstimator->estimate(pos,dT);
 
 
         float err = _velocitySet - _velocityActual;
 
+
         _errIntegr += err * dT;
 
-        _dutySet += _kp * err + _ki * _errIntegr + _kd * (err - _errLast)/dT;
+        _dutySet = _kp * err + _ki * _errIntegr + _kd * (err - _errLast)/dT;
 
         _errLast = err;
 
@@ -71,7 +94,7 @@ namespace robopi
     }
 
     
-    void MotorVelocityControl::handleTick(uint32_t tick, long long wheelTicks, float velocity)
+    void MotorVelocityControl::handleTick(uint32_t tick, long long wheelTicks)
     {
         
     }
