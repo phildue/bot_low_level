@@ -16,7 +16,7 @@ namespace robopi{
 
     class VelocityEstimator {
         public:
-            virtual float estimate(long long pos, float dT) = 0;
+            virtual float estimate(double pos, double dT) = 0;
     };
 
     class SlidingAverageFilter : public VelocityEstimator
@@ -33,33 +33,32 @@ namespace robopi{
                     _vs[i] = 0.0f;
                 }
             }
-            float estimate(long long pos, float dT) override;
-            const float& velocity(){return _v;}
+            float estimate(double pos, double dT) override;
         private:
-            const float _size;
-            long long _posLast;
-            std::vector<float> _vs;
+            const double _size;
+            double _posLast;
+            std::vector<double> _vs;
             unsigned int _idx;
-            float _v;
+            double _v;
     };
 
     class LuenbergerObserver : public VelocityEstimator
     {
         public:
             
-            LuenbergerObserver(float kp,float ki):
+            LuenbergerObserver(double kp,double ki):
             _kp(kp),
             _ki(ki),
             _v(0.0f),
             _velIntegr(0.0f),
-            _posLast(0U){}
+            _pos(0U){}
 
-            float estimate(long long pos, float dT) override;
+            float estimate(double pos, double dT) override;
         private:
 
-            long long _posLast;
-            float _velIntegr;
-            float _v,_kp,_ki;
+            double _pos;
+            double _velIntegr;
+            double _v,_kp,_ki;
  
     };
 

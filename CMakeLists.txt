@@ -20,6 +20,8 @@ add_library(${PROJECT_NAME} ${target_sources}
         src/Encoder.h
         src/PiGpio.cpp src/PiGpio.h)
 
+set(test_sources test/csv.cpp test/csv.h)
+
 if(COMPILE_FOR_PI)
     target_compile_definitions(${PROJECT_NAME} PUBLIC COMPILE_FOR_PI)
 endif()
@@ -32,11 +34,12 @@ if(COMPILE_FOR_PI)
 endif()
 
 if(COMPILE_TESTS)
-    add_executable(test_motor test/test_motor.cpp)
-    add_executable(exp_pwm_to_rad test/exp_pwm_to_rad.cpp)
-    add_executable(test_pid test/test_pid.cpp)
-    add_executable(test_encoder test/test_encoder.cpp)
-    add_executable(test_velocity_measurement test/test_velocity_measurement.cpp)
+    add_executable(test_motor test/test_motor.cpp ${test_sources})
+    add_executable(exp_pwm_to_rad test/exp_pwm_to_rad.cpp ${test_sources})
+    add_executable(test_pid test/test_pid.cpp ${test_sources})
+    add_executable(test_encoder test/test_encoder.cpp ${test_sources})
+    add_executable(test_velocity_measurement test/test_velocity_measurement.cpp ${test_sources})
+    add_executable(test_velocity_filter test/test_velocity_filter.cpp ${test_sources})
 
     target_link_libraries(test_motor ${PROJECT_NAME})
     target_link_libraries(exp_pwm_to_rad ${PROJECT_NAME})
@@ -45,6 +48,7 @@ if(COMPILE_TESTS)
     target_link_libraries(test_pid Threads::Threads)
     target_link_libraries(test_encoder ${PROJECT_NAME})
     target_link_libraries(test_velocity_measurement ${PROJECT_NAME})
+    target_link_libraries(test_velocity_filter ${PROJECT_NAME})
 
 endif()
 

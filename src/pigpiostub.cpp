@@ -2,8 +2,6 @@
 // Created by phil on 29.03.20.
 //
 
-#ifndef PIGPIOSTUB_H
-#define PIGPIOSTUB_H
 
 #define PI_OUTPUT 1
 #define PI_INITIALISED 0
@@ -64,5 +62,11 @@ void gpioSetPWMfrequency(int pin,int freq)
 void gpioDelay(int i) {
     std::this_thread::sleep_for(std::chrono::microseconds(i));
 }
+void gpioSetAlertFuncEx(int,void*,void*){}
+void gpioSetTimerFuncEx(int,int,gpioTimerFuncEx_t,void*){}
+void gpioSetISRFuncEx(int,int,int,gpioIsrFuncExt_t,void*){}
 
-#endif //PIGPIOSTUB_H
+
+
+void gpioSetSignalFunc(int, gpioSignal_t){}
+void gpioSetPullUpDown(int,int){}

@@ -1,21 +1,22 @@
 #include "MotorVelocityControl.h"
 #include <iostream>
 #include <numeric>
-constexpr float US_TO_S = (1.0f/(1000.0f*1000.0f));
-constexpr float COUNT_TO_RAD = M_PI/5.0f;
+constexpr double US_TO_S = (1.0f/(1000.0f*1000.0f));
+constexpr double COUNT_TO_RAD = M_PI/5.0f;
 constexpr float TICKS_US_TO_RAD_S = COUNT_TO_RAD / US_TO_S;
 constexpr float RAD_S_TO_TICKS_US = 1.0f/TICKS_US_TO_RAD_S;
 
 namespace robopi
 {
 
-    float SlidingAverageFilter::estimate(long long pos, float dT)
+    float SlidingAverageFilter::estimate(double pos, double dT)
     {
 
-        float dPos = static_cast<float>(pos - _posLast);
+        const double dPos = pos - _posLast;
+
         _posLast = pos;
 
-        float v = dPos/dT;
+        const double v = dPos/dT;
 
         _v -= _vs[_idx] / _size;
 
@@ -30,37 +31,36 @@ namespace robopi
             _idx = 0;
         }
 
-        return _v;
+        return static_cast<float>(_v);
     }
 
-    float LuenbergerObserver::estimate(long long pos, float dT)
+    float LuenbergerObserver::estimate(double pos, double dT)
     {
 
+        _pos += _v * dT;
 
-        float posEst = _posLast + _v * dT;
-        float errPos = static_cast<float>(pos - posEst);
+        double err = pos - _pos;
 
-        _velIntegr += _ki * errPos * dT;
+        _velIntegr += _ki * err * dT;
 
-        _v = _kp * errPos + _velIntegr;
+        _v = _kp * err + _velIntegr;
 
-        _posLast = pos;
+        return static_cast<float>(_v);
 
-        return _v;
     }
 
     void MotorVelocityControl::update(unsigned long t)
     {
 
-        float dT = static_cast<float>(t - _tLast)*US_TO_S;
-        if (dT <= 0.0f)
+        const float dT = static_cast<float>(t - _tLast) * US_TO_S;
+        if (dT <= 0.0)
         {
             return;
         }
         _tLast = t;
-        const long long pos = _encoder->wheelTicks()*COUNT_TO_RAD;
+        const double pos = static_cast<double>(_encoder->wheelTicks())*COUNT_TO_RAD;
       
-        _velocityActual = _velEstimator->estimate(pos,dT);
+        _velocityActual = _velEstimator->estimate(pos, static_cast<double>(dT));
 
 
         float err = _velocitySet - _velocityActual;
