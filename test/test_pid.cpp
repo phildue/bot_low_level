@@ -8,15 +8,9 @@
 #include <vector>
 #include "robopi_drivers/robopi_drivers.h"
 
-constexpr int enA = 21;
-constexpr int enB = 13;
-constexpr int in1 = 20;
-constexpr int in2 = 16;
-constexpr int in3 = 26;
-constexpr int in4 = 19;
-constexpr int encLeft = 2;
-constexpr int encRight = 5;
+#include "pin_layout.h"
 using namespace robopi;
+
 
 static volatile bool keepRunning = true;
 
@@ -28,7 +22,7 @@ const float dT = 0.001;
 const float T = 30.0f;
 const int nIterations = (int)(T/dT);
 const int dT_ms =(int) (dT*1000.0f);
-const float setPoint = M_2_PI*8.0f*5.0f;
+const float setPoint = M_2_PI*12.0f*5.0f;
 
 struct MotorLog
 {
@@ -57,15 +51,15 @@ int main(int argc, char *argv[])
     float ki = 0.00;
     uint16_t filterSize = 5000;
 
-    auto motorRight = std::make_shared<MotorLn298>(in1,in2,enA);
-    auto encoderRight = std::make_shared<Encoder>(encRight);
+    auto motorRight = std::make_shared<MotorLn298>(pins::in1,pins::in2,pins::enA);
+    auto encoderRight = std::make_shared<Encoder>(pins::encRight);
     //auto filterRight = std::make_shared<SlidingAverageFilter>(filterSize);
     auto filterRight = std::make_shared<LuenbergerObserver>(5.0,7.5);
 
     auto controlRight = std::make_shared<MotorVelocityControl>(motorRight,encoderRight,filterRight,kp,ki,kd);
 
-    auto motorLeft = std::make_shared<MotorLn298>(in4,in3,enB);
-    auto encoderLeft = std::make_shared<Encoder>(encLeft);
+    auto motorLeft = std::make_shared<MotorLn298>(pins::in4,pins::in3,pins::enB);
+    auto encoderLeft = std::make_shared<Encoder>(pins::encLeft);
     //auto filterLeft = std::make_shared<SlidingAverageFilter>(filterSize);
     auto filterLeft = std::make_shared<LuenbergerObserver>(5.0,7.5);
 

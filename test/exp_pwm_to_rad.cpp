@@ -4,18 +4,22 @@
 #include "robopi_drivers/robopi_drivers.h"
 #include <thread>
 
-constexpr int enA = 21;
-constexpr int enB = 13;
-constexpr int in1 = 20;
-constexpr int in2 = 16;
-constexpr int in3 = 26;
-constexpr int in4 = 19;
+#include "pin_layout.h"
+using namespace robopi;
+
+constexpr int enA = pins::enA;
+constexpr int enB = pins::enB;
+constexpr int in1 = pins::in1;
+constexpr int in2 = pins::in2;
+constexpr int in3 = pins::in3;
+constexpr int in4 = pins::in4;
+constexpr int encLeft = pins::encLeft;
+constexpr int encRight = pins::encRight;
 
 #include <chrono>
 #include <cmath>
 #include <vector>
 #include <numeric>
-using namespace robopi;
 constexpr float COUNT_TO_RAD = M_PI/10;
 
 float mean(const std::vector<float>& sample, int idxFrom, int idxTo)

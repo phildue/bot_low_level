@@ -7,17 +7,14 @@
 #include <csignal>
 #include <vector>
 #include "robopi_drivers/robopi_drivers.h"
+#include "pin_layout.h"
 
-constexpr int enA = 21;
-constexpr int enB = 13;
-constexpr int in1 = 20;
-constexpr int in2 = 16;
-constexpr int in3 = 26;
-constexpr int in4 = 19;
-constexpr int encmotorLeft = 2;
-constexpr int encmotorRight = 5;
+
 using namespace robopi;
 
+
+constexpr double US_TO_S = (1.0f/(1000.0f*1000.0f));
+constexpr double COUNT_TO_RAD = M_PI/5.0f;
 static volatile bool keepRunning = true;
 
 void sigHandler(int signal)
@@ -62,27 +59,51 @@ int main(int argc, char *argv[])
     auto pigpio = PiGpio::instance();
     gpioSetSignalFunc(SIGINT,sigHandler);
 
-    MotorLn298 motorRight(in1,in2,enA);
-    MotorLn298 motorLeft(in4,in3,enB);
-    Encoder encRight(encmotorRight,0);
-    Encoder encLeft(encmotorLeft,0);
-    
+    MotorLn298 motorRight(pins::in1,pins::in2,pins::enA);
+    MotorLn298 motorLeft(pins::in4,pins::in3,pins::enB);
+    Encoder encRight(pins::encRight,0);
+    Encoder encLeft(pins::encLeft,0);
+    LuenbergerObserver observerLeft(5.0,7.5),observerRight(5.0,7.5);
+    SlidingAverageFilter avgFilterLeft(100),avgFilterRight(100);
+
+
     auto logMotorRight = std::make_shared<MotorLog>(nIterations*10);
     auto logMotorLeft = std::make_shared<MotorLog>(nIterations*10); 
 
     encRight.subscribe(logMotorRight);
     encLeft.subscribe(logMotorLeft);
 
-    std::vector<float> t;
-    std::vector<float> ticksLeft,ticksRight;
+    std::vector<float> t(nIterations);
+    std::vector<float> ticksLeft(nIterations),ticksRight(nIterations);
+    std::vector<float> vMeanLeft(nIterations),vMeanRight(nIterations);
+    std::vector<float> vObsLeft(nIterations),vObsRight(nIterations);
+
     auto start = std::chrono::high_resolution_clock::now();
     for(int i = 0; i < nIterations && keepRunning; i++)
     {
-        motorRight.set(setPoint);
+        //motorRight.set(setPoint);
         motorLeft.set(setPoint);
-        t.push_back(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()-start).count());
-        ticksLeft.push_back(encLeft.wheelTicks());
-        ticksRight.push_back(encRight.wheelTicks());
+        t[i]  = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()-start).count();
+        ticksLeft[i] = encLeft.wheelTicks();
+        ticksRight[i] = encRight.wheelTicks();
+        if(i > 0)
+        {
+            double dt = static_cast<double>((t[i] - t[i-1])) * US_TO_S;
+            double dPosLeft = static_cast<double>(ticksLeft[i]) * COUNT_TO_RAD;
+            double dPosRight = static_cast<double>(ticksRight[i]) * COUNT_TO_RAD;
+
+            vObsLeft[i] = observerLeft.estimate(dPosLeft,dt);
+            vObsRight[i] = observerRight.estimate(dPosRight,dt);
+            vMeanLeft[i] = avgFilterLeft.estimate(dPosLeft,dt);
+            vMeanRight[i] = avgFilterRight.estimate(dPosRight,dt);
+            
+        }else{
+             vObsLeft[i] = 0;
+             vObsRight[i] = 0;
+             vMeanLeft[i] = 0;
+             vMeanRight[i] = 0;;
+            
+        }
         std::this_thread::sleep_for (std::chrono::milliseconds(dT_ms));
     }
     std::cout << "Ctrl Loop Finished" << std::endl;
@@ -108,12 +129,12 @@ int main(int argc, char *argv[])
 
     std::ofstream logLoop("log_loop.csv");
     
-    logLoop << "idx, pwm* [%],t_loop [us], pos left [ticks],pos right [ticks]\n";
+    logLoop << "idx, pwm* [%],t_loop [us],pos left [ticks],pos right [ticks],v left obs [rad/s],v left mean [rad/s],v right obs [rad/s],v right mean [rad/s]\n";
     
-    for(int i = 0; i < t.size() && keepRunning; i++)
+    for(int i = 0; i < nIterations && keepRunning; i++)
     {
         logLoop << i << "," << setPoint  
-        << "," << t[i] << "," << ticksLeft[i] << "," << ticksRight[i]
+        << "," << t[i] << "," << ticksLeft[i] << "," << ticksRight[i] << "," << vMeanLeft[i] << "," << vObsLeft[i] << "," << vMeanRight[i] << "," << vObsRight[i]
         << "\n";
     }
 

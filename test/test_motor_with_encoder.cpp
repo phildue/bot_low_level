@@ -4,14 +4,7 @@
 #include "robopi_drivers/robopi_drivers.h"
 #include <thread>
 
-constexpr int enA = 21;
-constexpr int enB = 13;
-constexpr int in1 = 20;
-constexpr int in2 = 16;
-constexpr int in3 = 26;
-constexpr int in4 = 19;
-constexpr int encLeft = 5;
-constexpr int encRight = 2;
+#include "robopi_drivers/pin_layout.h"
 
 #include <chrono>
 #include <cmath>
@@ -30,8 +23,8 @@ int main(int argc, char *argv[])
     float kp = 0.001;
     float kd = 0.0;
     float ki = 0.0;
-    MotorLn298Enc right(in1,in2,enA,encRight,dT,kp,kd,ki);
-    MotorLn298Enc left(in4,in3,enB,encLeft,dT,kp,kd,ki);
+    MotorLn298Enc right(pins::in1,pins::in2,pins::enA,pins::encRight,dT,kp,kd,ki);
+    MotorLn298Enc left(pins::in4,pins::in3,pins::enB,pins::encLeft,dT,kp,kd,ki);
 
     try {
 

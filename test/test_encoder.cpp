@@ -8,14 +8,7 @@
 #include <vector>
 #include "robopi_drivers/robopi_drivers.h"
 
-constexpr int enA = 21;
-constexpr int enB = 13;
-constexpr int in1 = 20;
-constexpr int in2 = 16;
-constexpr int in3 = 26;
-constexpr int in4 = 19;
-constexpr int encLeft = 2;
-constexpr int encRight = 5;
+#include "pin_layout.h"
 using namespace robopi;
 
 static volatile bool keepRunning = true;
@@ -27,8 +20,8 @@ void sigHandler(int signal)
 int main(int argc, char *argv[])
 {
    
-    Encoder encoderLeft(encLeft,0);
-    Encoder encoderRight(encRight,0);
+    Encoder encoderLeft(pins::encLeft,0);
+    Encoder encoderRight(pins::encRight,0);
 
     gpioSetSignalFunc(SIGINT,sigHandler);
     const int nSamples = 20*5;

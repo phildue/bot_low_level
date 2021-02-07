@@ -3,20 +3,15 @@
 #include <stdio.h>
 #include "robopi_drivers/robopi_drivers.h"
 #include <thread>
+#include "pin_layout.h"
 
-constexpr int enA = 21;
-constexpr int enB = 13;
-constexpr int in1 = 20;
-constexpr int in2 = 16;
-constexpr int in3 = 26;
-constexpr int in4 = 19;
 
 #include <chrono>
 using namespace robopi;
 int main(int argc, char *argv[])
 {
-    MotorLn298 left(in1,in2,enA);
-    MotorLn298 right(in4,in3,enB);
+    MotorLn298 left(pins::in1,pins::in2,pins::enA);
+    MotorLn298 right(pins::in4,pins::in3,pins::enB);
 
     auto start = std::chrono::system_clock::now();
 
