@@ -7,7 +7,7 @@
 
 #include <chrono>
 #include <memory>
-#include "PiGpio.h"
+#include "Gpio.h"
 namespace robopi{
 
     typedef long long int Timestamp;
@@ -42,7 +42,7 @@ namespace robopi{
     class SonarHcsr04
     {
     public:
-        SonarHcsr04(GpioId trigger, GpioId echo,std::shared_ptr<PiGpio> piGpio = robopi::PiGpio::instance());
+        SonarHcsr04(GpioId trigger, GpioId echo,std::shared_ptr<Gpio> gpios = robopi::Gpio::instance());
         Measurement measure();
         void echo(int gpio, int level, uint32_t tick);
         void trigger();
@@ -51,7 +51,7 @@ namespace robopi{
         GpioId _trigger,_echo;
         Measurement m_measurement;
         Timestamp m_start;
-        std::shared_ptr<PiGpio> _piGpio;
+        std::shared_ptr<Gpio> _gpios;
     };
 
 }

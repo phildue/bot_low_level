@@ -3,11 +3,6 @@
 //
 
 #include "Encoder.h"
-#ifdef COMPILE_FOR_PI
-#include <pigpio.h>
-#else
-#include <pigpiostub.h>
-#endif
 #include <thread>
 #include <chrono>
 #include <iostream>
@@ -42,7 +37,7 @@ namespace robopi{
 
 
     void Encoder::initialize() {
-        if (gpioInitialise() < 0) {
+        if (_gpios->initialise() < 0) {
             throw std::runtime_error("pigpio initialisation failed\n");
         }
     }
@@ -57,24 +52,24 @@ namespace robopi{
         return angle;
     }
 
-    Encoder::Encoder(GpioId in,uint32_t timeout, std::shared_ptr<PiGpio> piGpio):
+    Encoder::Encoder(GpioId in,uint32_t timeout, std::shared_ptr<Gpio> gpios):
     _in(in),
-    _piGpio(piGpio),
+    _gpios(gpios),
     _wheelTicks(0U),
     _timeout(timeout),
     _direction(true){
-        gpioSetMode(_in, PI_INPUT);
+        gpios->setMode(_in, PI_INPUT);
 
-        gpioSetPullUpDown(_in, PI_PUD_UP);
+        gpios->setPullUpDown(_in, PI_PUD_UP);
         //gpioSetAlertFuncEx(_in,interruptEx,this);
-        gpioSetISRFuncEx(_in,FALLING_EDGE,_timeout,interruptEx,this);
+        gpios->setISRFuncEx(_in,FALLING_EDGE,_timeout,interruptEx,this);
 
 
     }
     Encoder::~Encoder()
     {
         //gpioSetAlertFunc(_in,NULL);
-        gpioSetISRFuncEx(_in,FALLING_EDGE,_timeout,NULL,this);
+        _gpios->setISRFuncEx(_in,FALLING_EDGE,_timeout,NULL,this);
 
 
     }

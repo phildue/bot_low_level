@@ -5,14 +5,14 @@
 #ifndef GPIOCPP_GPIOWHEEL_H
 #define GPIOCPP_GPIOWHEEL_H
 #include <memory>
-#include "PiGpio.h"
+#include "Gpio.h"
 namespace robopi{
 
 
     class MotorLn298
 {
 public:
-    MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<PiGpio> piGpio = robopi::PiGpio::instance());
+    MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<Gpio> gpios = robopi::Gpio::instance());
     /**
      * Pass set point
      * @param pwm duty cycle -1.0 to 1.0
@@ -47,7 +47,7 @@ protected:
     int convert(float dutyCycle);
 
     GpioId _forward,_backward,_enable;
-    std::shared_ptr<PiGpio> _piGpio;
+    std::shared_ptr<Gpio> _gpios;
 };
 
 }

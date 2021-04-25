@@ -10,7 +10,7 @@
 #include <cmath>
 #include <vector>
 
-#include "PiGpio.h"
+#include "Gpio.h"
 namespace robopi{
 
     class TickHandler
@@ -22,7 +22,7 @@ namespace robopi{
     class Encoder
     {
     public:
-        Encoder(GpioId in, uint32_t timeout = 0, std::shared_ptr<PiGpio> piGpio = robopi::PiGpio::instance());
+        Encoder(GpioId in, uint32_t timeout = 0, std::shared_ptr<Gpio> gpios = robopi::Gpio::instance());
 
         long long wheelTicks() const {return _wheelTicks;}
 
@@ -48,7 +48,7 @@ namespace robopi{
         std::vector<std::shared_ptr<TickHandler>> _observers;
         void initialize();
         GpioId _in;
-        std::shared_ptr<PiGpio> _piGpio;
+        std::shared_ptr<Gpio> _gpios;
         long long _wheelTicks;
         bool _direction;
         float _timeout;

@@ -59,8 +59,8 @@ struct MotorLog : public TickHandler
 
 int main(int argc, char *argv[])
 {
-    auto pigpio = PiGpio::instance();
-    gpioSetSignalFunc(SIGINT,sigHandler);
+    auto pigpio = Gpio::instance();
+    pigpio->setSignalFunc(SIGINT,sigHandler);
 
     MotorLn298 motorRight(in1,in2,enA);
     MotorLn298 motorLeft(in4,in3,enB);

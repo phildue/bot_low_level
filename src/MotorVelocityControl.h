@@ -6,7 +6,7 @@
 #define MOTOR_LN298_ENC_H
 #include <memory>
 #include <vector>
-#include "PiGpio.h"
+#include "Gpio.h"
 #include "Encoder.h"
 #include "MotorLn298.h"
 

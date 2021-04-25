@@ -28,7 +28,7 @@ using namespace robopi;
 
 int main(int argc, char *argv[])
 {
-    auto pigpio = PiGpio::instance();
+    auto pigpio = Gpio::instance();
 
     LuenbergerObserver observerLeft(5.0,7.5),observerRight(5.0,7.5);
     SlidingAverageFilter avgFilterLeft(100),avgFilterRight(100);

@@ -3,11 +3,6 @@
 //
 
 #include "SonarHcsr04.h"
-#ifdef COMPILE_FOR_PI
-#include <pigpio.h>
-#else
-#include <pigpiostub.h>
-#endif
 #include <thread>
 #include <chrono>
 #include <iostream>
@@ -43,11 +38,11 @@ namespace robopi{
 
     void SonarHcsr04::trigger()
     {
-	gpioWrite(_trigger, PI_ON);
+        _gpios->write(_trigger, PI_ON);
 
-        gpioDelay(10); /* 10us trigger pulse */
+        _gpios->delay(10); /* 10us trigger pulse */
 
-        gpioWrite(_trigger, PI_OFF);
+        _gpios->write(_trigger, PI_OFF);
     }
 
 
@@ -59,24 +54,22 @@ namespace robopi{
     }
 
     void SonarHcsr04::initialize() {
-        if (gpioInitialise() < 0) {
+        if (_gpios->initialise() < 0) {
             throw std::runtime_error("pigpio initialisation failed\n");
         }
     }
 
-    SonarHcsr04::SonarHcsr04(GpioId trigger, GpioId echo, std::shared_ptr<PiGpio> piGpio):
+    SonarHcsr04::SonarHcsr04(GpioId trigger, GpioId echo, std::shared_ptr<Gpio> gpios):
     _echo(echo),
     _trigger(trigger),
-    _piGpio(piGpio),
+    _gpios(gpios),
     m_measurement(0,0),
     m_start(0){
-        gpioSetMode(_echo, PI_INPUT);
-        gpioSetMode(_trigger, PI_OUTPUT);
+        _gpios->setMode(_echo, PI_INPUT);
+        _gpios->setMode(_trigger, PI_OUTPUT);
 
-#ifdef COMPILE_FOR_PI
-        gpioSetAlertFuncEx(_echo, echoEx,this);
-        piGpio->setTimerFuncEx(50, triggerEx,this);
-#endif
+        _gpios->setAlertFuncEx(_echo, echoEx,this);
+        _gpios->setTimerFuncEx(50, triggerEx,this);
     }
 
 

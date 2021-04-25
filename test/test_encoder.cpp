@@ -26,11 +26,11 @@ void sigHandler(int signal)
 }
 int main(int argc, char *argv[])
 {
-   
+
     Encoder encoderLeft(encLeft,0);
     Encoder encoderRight(encRight,0);
 
-    gpioSetSignalFunc(SIGINT,sigHandler);
+    Gpio::instance()->setSignalFunc(SIGINT,sigHandler);
     const int nSamples = 20*5;
     const int sampleMs = 50;
     std::vector<float> ticksLeft(nSamples),ticksRight(nSamples);

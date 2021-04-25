@@ -5,9 +5,6 @@ set(CMAKE_CXX_STANDARD 14)
 set(COMPILE_FOR_PI TRUE CACHE BOOL "Set true if compile for pi")
 set(COMPILE_TESTS FALSE CACHE BOOL "Set true if to compile tests")
 
-if(NOT COMPILE_FOR_PI)
-    set(target_sources src/pigpiostub.h src/pigpiostub.cpp)
-endif()
 
 add_library(${PROJECT_NAME} ${target_sources}
         src/MotorLn298.h
@@ -18,7 +15,7 @@ add_library(${PROJECT_NAME} ${target_sources}
         src/SonarHcsr04.cpp
         src/Encoder.cpp
         src/Encoder.h
-        src/PiGpio.cpp src/PiGpio.h)
+        src/Gpio.cpp src/Gpio.h)
 
 set(test_sources test/csv.cpp test/csv.h)
 
