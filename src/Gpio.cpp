@@ -47,7 +47,7 @@ namespace robopi {
         gpioSetMode(pin,sig);
     }
 
-    void Gpio::setAlertFuncEx(int pin, eventFuncEx_t func, void* params) {
+    void Gpio::setAlertFuncEx(int pin, gpioAlertFuncEx_t func, void* params) {
         gpioSetAlertFuncEx(pin,func,params);
     }
 
@@ -55,7 +55,7 @@ namespace robopi {
         gpioSetTimerFuncEx(pin,time,func,params);
     }
 
-    void Gpio::setISRFuncEx(int pin, int freq, int timeout, gpioIsrFuncExt_t func, void *params) {
+    void Gpio::setISRFuncEx(int pin, int freq, float timeout, gpioISRFuncEx_t func, void *params) {
         gpioSetISRFuncEx(pin,freq,timeout,func,params);
     }
 
@@ -79,7 +79,7 @@ namespace robopi {
         gpioSetPWMfrequency(pin,freq);
     }
 
-    void Gpio::setSignalFunc(int pin, gpioSignal_t signal) {
+    void Gpio::setSignalFunc(int pin, gpioSignalFunc_t signal) {
         gpioSetSignalFunc(pin,signal);
     }
 
@@ -93,9 +93,6 @@ namespace robopi {
 
     void Gpio::delay(int msec) {
         gpioDelay(msec);
-    }
-    void Gpio::setSignalFunc(int signal, gpioSignalFunc_t* func) {
-        gpioSetSignalFunc(signal,func);
     }
 
 #else
@@ -130,13 +127,13 @@ namespace robopi {
     void Gpio::setMode(int pin, int sig) {
     }
 
-    void Gpio::setAlertFuncEx(int pin, eventFuncEx_t func, void* params) {
+    void Gpio::setAlertFuncEx(int pin, gpioAlertFuncEx_t func, void* params) {
     }
 
     void Gpio::setTimerFuncEx(int pin, int time, gpioTimerFuncEx_t func, void *params) {
     }
 
-    void Gpio::setISRFuncEx(int pin, int upDown, float freq, gpioIsrFuncExt_t func, void *params) {
+    void Gpio::setISRFuncEx(int pin, int upDown, float freq, gpioISRFuncEx_t func, void *params) {
     }
 
     void Gpio::write(int pin, int sig) {
