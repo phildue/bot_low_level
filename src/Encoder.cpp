@@ -3,36 +3,29 @@
 //
 
 #include "Encoder.h"
+#include "Gpio.h"
 #include <thread>
 #include <chrono>
 #include <iostream>
+#include <math.h>
 
 constexpr float TICK_TO_S = (1/(1000.0));
-constexpr float COUNT_TO_RAD = M_PI/5.0f;
+constexpr float COUNT_TO_RAD = M_PI/10.0f;
 constexpr float TICKS_US_TO_RAD_S = COUNT_TO_RAD / TICK_TO_S;
 
 namespace robopi{
 
     void interruptEx(int gpio,int level, uint32_t tick, void* user)
     {
-        if(level == FALLING_EDGE)
-        {
-             Encoder* enc = (Encoder*)user;
+        static Encoder* enc = (Encoder*)user;
+        enc->interrupt(gpio,level,tick);
 
-             enc->interrupt(gpio,level,tick);
-            
-        }
-        
     }
 
     void Encoder::interrupt(int gpio,int level, uint32_t tick)
     {
         _direction ? _wheelTicks++ : _wheelTicks--;
-        for(const auto& tickHandler : _observers)
-        {
-            tickHandler->handleTick(tick,wheelTicks());
-        }
-        
+
     }
 
 

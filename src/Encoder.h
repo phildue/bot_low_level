@@ -13,12 +13,6 @@
 #include "Gpio.h"
 namespace robopi{
 
-    class TickHandler
-    {
-    public:
-        virtual void handleTick(uint32_t tick, long long wheelTicks) = 0;
-    };
-
     class Encoder
     {
     public:
@@ -37,15 +31,10 @@ namespace robopi{
 
         void setDirection(bool forward){_direction = forward;}
 
-        void subscribe(std::shared_ptr<TickHandler> observer)
-        {
-            _observers.push_back(observer);
-        }
         ~Encoder();
 
 
     protected:
-        std::vector<std::shared_ptr<TickHandler>> _observers;
         void initialize();
         GpioId _in;
         std::shared_ptr<Gpio> _gpios;
