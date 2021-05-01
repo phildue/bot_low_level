@@ -18,11 +18,10 @@
 #define PI_ON 1
 #define PI_OFF 0
 
-typedef void (*eventFuncEx_t)(int event, int level, uint32_t tick, void *userdata);
+typedef void (*gpioAlertFuncEx_t)(int event, int level, uint32_t tick, void *userdata);
 typedef void (*gpioTimerFunc_t) (void);
 typedef void (*gpioTimerFuncEx_t) (void *userdata);
-typedef void (*gpioIsrFuncExt_t) (int,int,unsigned int, void *userdata);
-typedef void (*gpioSignal_t) (int);
+typedef void (*gpioISRFuncEx_t) (int,int,unsigned int, void *userdata);
 typedef void (*gpioSignalFunc_t) (int signum);
 
 #endif
@@ -40,18 +39,17 @@ namespace robopi {
 
         void setMode(int pin,int sig);
 
-        void setAlertFuncEx(int pin,eventFuncEx_t func,void* params);
+        void setAlertFuncEx(int pin,gpioAlertFuncEx_t func,void* params);
         void setTimerFuncEx(int pin,int time,gpioTimerFuncEx_t func,void* params);
-        void setISRFuncEx(int pin, int upDown, float freq, gpioIsrFuncExt_t func, void *params);
+        void setISRFuncEx(int pin, int upDown, float freq, gpioISRFuncEx_t func, void *params);
         void write(int pin,int sig);
         void pWM(int pin,float sig);
         int read(int pin);
-        void setSignalFunc(int signal, gpioSignalFunc_t* func);
+        void setSignalFunc(int signal, gpioSignalFunc_t func);
 
         float getPWMdutycycle(int pin);
 
         void setPWMfrequency(int pin,int freq);
-        void setSignalFunc(int, gpioSignal_t);
         void setPullUpDown(int,int);
         ~Gpio();
     private:
