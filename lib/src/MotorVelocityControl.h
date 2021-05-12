@@ -63,7 +63,7 @@ namespace robopi{
     };
 
 
-    class MotorVelocityControl : public TickHandler
+    class MotorVelocityControl
     {
     public:
         MotorVelocityControl(std::shared_ptr<MotorLn298> motor,std::shared_ptr<Encoder> encoder, std::shared_ptr<VelocityEstimator> velEstimator,
@@ -119,7 +119,6 @@ namespace robopi{
         const float& error() { return _errLast;}
         const float& dutySet() { return _dutySet;}
 
-        void handleTick(uint32_t tick, long long wheelTicks);
     protected:
 
         float _kp,_ki,_kd;

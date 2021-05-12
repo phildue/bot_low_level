@@ -94,10 +94,5 @@ namespace robopi
     }
 
     
-    void MotorVelocityControl::handleTick(uint32_t tick, long long wheelTicks)
-    {
-        
-    }
-
 
 }		

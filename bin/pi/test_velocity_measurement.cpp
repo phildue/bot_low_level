@@ -30,7 +30,7 @@ const int nIterations = (int)(T/dT);
 const int dT_ms =(int) (dT*1000.0f);
 const float setPoint = 0.5f;
 
-struct MotorLog : public TickHandler
+struct MotorLog //: public TickHandler
 {
     MotorLog(int size)
     {
@@ -45,7 +45,7 @@ struct MotorLog : public TickHandler
     std::vector<float> chronoUs;
     std::chrono::time_point<std::chrono::high_resolution_clock> start;
 
-    void handleTick(uint32_t tick, long long wheelTicks) override
+    void handleTick(uint32_t tick, long long wheelTicks) //override
     {
         position.push_back(wheelTicks);
         gpioTick.push_back(tick);
@@ -70,8 +70,8 @@ int main(int argc, char *argv[])
     auto logMotorRight = std::make_shared<MotorLog>(nIterations*10);
     auto logMotorLeft = std::make_shared<MotorLog>(nIterations*10); 
 
-    encRight.subscribe(logMotorRight);
-    encLeft.subscribe(logMotorLeft);
+//    encRight.subscribe(logMotorRight);
+//    encLeft.subscribe(logMotorLeft);
 
     std::vector<float> t;
     std::vector<float> ticksLeft,ticksRight;
