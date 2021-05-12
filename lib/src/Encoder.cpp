@@ -3,9 +3,9 @@
 //
 
 #include "Encoder.h"
+#include <Gpio.h>
 #include <thread>
 #include <chrono>
-#include <iostream>
 
 constexpr float TICK_TO_S = (1/(1000.0));
 constexpr float COUNT_TO_RAD = M_PI/5.0f;
