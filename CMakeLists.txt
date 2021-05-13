@@ -7,6 +7,6 @@ set(COMPILE_FOR_PI FALSE CACHE BOOL "Set true if compile for pi")
 add_subdirectory(lib)
 
 
-add_subdirectory(bin)
+add_subdirectory(target)
 
 
