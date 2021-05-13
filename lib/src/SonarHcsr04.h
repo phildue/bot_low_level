@@ -5,9 +5,8 @@
 #ifndef GPIOCPP_GPIOSONAR_H
 #define GPIOCPP_GPIOSONAR_H
 
-#include <chrono>
-#include <memory>
-#include "Gpio.h"
+#include "types.h"
+#include "System.h"
 namespace robopi{
 
     typedef long long int Timestamp;
@@ -42,16 +41,15 @@ namespace robopi{
     class SonarHcsr04
     {
     public:
-        SonarHcsr04(GpioId trigger, GpioId echo,std::shared_ptr<Gpio> gpios = robopi::Gpio::instance());
+        SonarHcsr04(GpioId trigger, GpioId echo,System* system);
         Measurement measure();
-        void echo(int gpio, int level, uint32_t tick);
+        void echo(int gpio, int level, unsigned int tick);
         void trigger();
     protected:
-        void initialize();
         GpioId _trigger,_echo;
         Measurement m_measurement;
         Timestamp m_start;
-        std::shared_ptr<Gpio> _gpios;
+        System* _system;
     };
 
 }

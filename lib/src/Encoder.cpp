@@ -3,10 +3,7 @@
 //
 
 #include "Encoder.h"
-#include "Gpio.h"
-#include <thread>
-#include <chrono>
-#include <iostream>
+#include "System.h"
 #include <math.h>
 
 constexpr float TICK_TO_S = (1/(1000.0));
@@ -15,24 +12,11 @@ constexpr float TICKS_US_TO_RAD_S = COUNT_TO_RAD / TICK_TO_S;
 
 namespace robopi{
 
-    void interruptEx(int gpio,int level, uint32_t tick, void* user)
-    {
-        static Encoder* enc = (Encoder*)user;
-        enc->interrupt(gpio,level,tick);
 
-    }
-
-    void Encoder::interrupt(int gpio,int level, uint32_t tick)
+    void Encoder::tick()
     {
         _direction ? _wheelTicks++ : _wheelTicks--;
 
-    }
-
-
-    void Encoder::initialize() {
-        if (_gpios->initialise() < 0) {
-            throw std::runtime_error("pigpio initialisation failed\n");
-        }
     }
 
     float Encoder::position() const
@@ -45,24 +29,19 @@ namespace robopi{
         return angle;
     }
 
-    Encoder::Encoder(GpioId in,uint32_t timeout, std::shared_ptr<Gpio> gpios):
+    Encoder::Encoder(GpioId in, System* system):
     _in(in),
-    _gpios(gpios),
+    _system(system),
     _wheelTicks(0U),
-    _timeout(timeout),
     _direction(true){
-        gpios->setMode(_in, PI_INPUT);
+        system->setMode(_in, PI_INPUT);
 
-        gpios->setPullUpDown(_in, PI_PUD_UP);
-        //gpioSetAlertFuncEx(_in,interruptEx,this);
-        gpios->setISRFuncEx(_in,FALLING_EDGE,_timeout,interruptEx,this);
+        system->setPullUpDown(_in, PI_PUD_UP);
 
 
     }
     Encoder::~Encoder()
     {
-        //gpioSetAlertFunc(_in,NULL);
-        _gpios->setISRFuncEx(_in,FALLING_EDGE,_timeout,NULL,this);
 
 
     }

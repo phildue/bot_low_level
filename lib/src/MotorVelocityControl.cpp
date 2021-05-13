@@ -1,8 +1,7 @@
 #include "MotorVelocityControl.h"
-#include <iostream>
-#include <numeric>
+constexpr double M_PI = 3.14159265358979323846;
 constexpr double US_TO_S = (1.0f/(1000.0f*1000.0f));
-constexpr double COUNT_TO_RAD = M_PI/5.0f;
+constexpr double COUNT_TO_RAD = M_PI/10.0f;
 constexpr float TICKS_US_TO_RAD_S = COUNT_TO_RAD / US_TO_S;
 constexpr float RAD_S_TO_TICKS_US = 1.0f/TICKS_US_TO_RAD_S;
 
@@ -26,7 +25,7 @@ namespace robopi
 
         _idx++;
         
-        if(_idx >= _vs.size())
+        if(_idx >= _size)
         {
             _idx = 0;
         }
@@ -49,15 +48,13 @@ namespace robopi
 
     }
 
-    void MotorVelocityControl::update(unsigned long t)
+    void MotorVelocityControl::update(float dT)
     {
 
-        const float dT = static_cast<float>(t - _tLast) * US_TO_S;
         if (dT <= 0.0)
         {
             return;
         }
-        _tLast = t;
         const double pos = static_cast<double>(_encoder->wheelTicks())*COUNT_TO_RAD;
       
         _velocityActual = _velEstimator->estimate(pos, static_cast<double>(dT));
@@ -79,18 +76,8 @@ namespace robopi
     
     void MotorVelocityControl::set(float velocity) {
         
-        
         _velocitySet = velocity;
-    	/*
-    	if(_velocitySet > MAX_VEL_DF_DC)
-    	{
-    		_velocitySet = MAX_VEL_DF_DC;
-    	}else if(_velocitySet < - MAX_VEL_DF_DC)
-    	{
-    		_velocitySet = -MAX_VEL_DF_DC;
-    	}*/
-        //_velocitySet *= RAD_S_TO_TICKS_US;
-       
+
     }
 
     

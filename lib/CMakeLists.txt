@@ -12,12 +12,19 @@ add_library(${PROJECT_NAME}
         src/SonarHcsr04.cpp
         src/Encoder.cpp
         src/Encoder.h
-        src/Gpio.cpp src/Gpio.h)
+        #src/Gpio.cpp
+        src/System.h
+        src/types.h)
 
 
 if(COMPILE_FOR_PI)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC COMPILE_FOR_PI)
+    message(STATUS "Compiling for PI")
+    target_compile_definitions(${PROJECT_NAME} PUBLI COMPILE_FOR_PI=1)
     target_link_libraries(${PROJECT_NAME} -lpigpio)
+endif()
+if(COMPILE_FOR_ARDUINO)
+    message(STATUS "Compiling for Arduino")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC COMPILE_FOR_ARDUINO=1)
 endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC src)

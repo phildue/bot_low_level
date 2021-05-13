@@ -5,18 +5,14 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
-#include <chrono>
-#include <memory>
-#include <cmath>
-#include <vector>
-
-#include "Gpio.h"
+#include "types.h"
+#include "System.h"
 namespace robopi{
 
     class Encoder
     {
     public:
-        Encoder(GpioId in, uint32_t timeout = 0, std::shared_ptr<Gpio> gpios = robopi::Gpio::instance());
+        Encoder(GpioId in, System* system);
 
         long long wheelTicks() const {return _wheelTicks;}
 
@@ -25,7 +21,7 @@ namespace robopi{
 
         const GpioId& gpioIn() const { return _in;}
 
-        void interrupt(int gpio,int level, uint32_t tick);
+        void tick();
 
         void reset() {_wheelTicks = 0;};
 
@@ -35,9 +31,8 @@ namespace robopi{
 
 
     protected:
-        void initialize();
         GpioId _in;
-        std::shared_ptr<Gpio> _gpios;
+        System* _system;
         long long _wheelTicks;
         bool _direction;
         float _timeout;

@@ -2,18 +2,11 @@
 // Created by phil on 11.12.20.
 //
 
-#include "Gpio.h"
-
-#include <stdexcept>
-#include <iostream>
-#include <vector>
-#include <thread>
-#include <chrono>
+#include "System.h"
 namespace robopi {
 
-    std::shared_ptr<Gpio> Gpio::m_instance = nullptr;
-#ifdef TARGET_ARDUINO
-#elif COMPILE_FOR_PI
+
+#if defined COMPILE_FOR_PI
     Gpio::Gpio() {
 
         if (gpioInitialise() < 0) {
@@ -94,10 +87,12 @@ namespace robopi {
     void Gpio::delay(int msec) {
         gpioDelay(msec);
     }
-
 #else
+
+#include <iostream>
+#include <thread>
     static float pwmDutyCycle = 0;
-    static std::vector<float> pins = std::vector<float>(50);
+    static float pins[50];
 
     Gpio::Gpio() {
 
@@ -109,11 +104,11 @@ namespace robopi {
 
     }
 
-    std::shared_ptr<Gpio> Gpio::instance()
+    Gpio* Gpio::instance()
     {
 
         if(!m_instance){
-            m_instance = std::shared_ptr<Gpio>(new Gpio);
+            m_instance = new Gpio();
         }
 
         return m_instance;
@@ -170,8 +165,12 @@ namespace robopi {
     int Gpio::initialise() {
     }
 
-    void Gpio::delay(int msec) {
+    void Gpio::sleep(int msec) {
         std::this_thread::sleep_for(std::chrono::microseconds(msec));
+    }
+
+    int Gpio::stop() {
+        delete Gpio::instance();
     }
 
     void Gpio::setSignalFunc(int signal, gpioSignalFunc_t* func) {
