@@ -42,6 +42,7 @@ namespace robopi {
     }
 
     void MotorLn298::stop() {
+        _system->pWM(_enable, 0);
         _system->write(_forward, PI_OFF);
         _system->write(_backward, PI_OFF);
     }

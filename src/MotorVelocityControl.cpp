@@ -57,7 +57,7 @@ namespace robopi
         }
         const double pos = static_cast<double>(_encoder->wheelTicks())*COUNT_TO_RAD;
       
-        _velocityActual = _velEstimator->estimate(pos, static_cast<double>(dT));
+        _velocityActual = _velEstimator->estimate(pos, dT);
 
 
         double err = _velocitySet - _velocityActual;
@@ -75,9 +75,38 @@ namespace robopi
 
     
     void MotorVelocityControl::set(double velocity) {
-        
-        _velocitySet = velocity;
 
+        if (velocity > _vMax)
+        {
+            _velocitySet = _vMax;
+        }
+        else if (velocity < -1.0 * _vMax)
+        {
+            _velocitySet = -1.0 * _vMax;
+        }
+        else if(velocity > _vMax)
+        {
+            _velocitySet = _vMax;
+        }
+        else if (velocity < -1.0 * _vMax)
+        {
+            _velocitySet = -1.0 * _vMax;
+        }else{
+            _velocitySet = velocity;
+
+        }
+
+    }
+
+    void MotorVelocityControl::stop() {
+
+        _errLast = 0.0;
+        _errIntegr = 0.0;
+        _velocitySet = 0.0;
+        _velocityActual = 0.0;
+        _dutySet = 0.0;
+        _motor->stop();
+        _encoder->reset();
     }
 
     

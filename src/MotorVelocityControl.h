@@ -55,6 +55,8 @@ namespace robopi{
             _pos(0U){}
 
             double estimate(double pos, double dT) override;
+            double& P() {return _kp;}
+            double& I() {return _ki;}
         private:
 
             double _pos;
@@ -68,7 +70,7 @@ namespace robopi{
     {
     public:
         MotorVelocityControl(MotorLn298* motor,Encoder* encoder, VelocityEstimator* velEstimator,
-            double kp, double ki, double kd,double maxVel = MAX_VEL_DF_DC):
+            double kp, double ki, double kd,double vMax = MAX_VEL_DF_DC):
         _motor(motor),
         _velEstimator(velEstimator),
         _encoder(encoder),
@@ -79,7 +81,8 @@ namespace robopi{
         _errIntegr(0.0),
         _velocitySet(0.0),
         _velocityActual(0.0),
-        _dutySet(0.0){
+        _dutySet(0.0),
+        _vMax(vMax){
             
             
         }
@@ -95,6 +98,11 @@ namespace robopi{
          * @param dT time difference since last update [s]
          */
         void update(double dT);
+
+        /**
+         * Stop motor. Reset internals as well as encoder ticks.
+         */
+        void stop();
 
         /**
          * Get angular position from encoder
@@ -121,13 +129,7 @@ namespace robopi{
        */
         const double& velocitySet() const {return _velocitySet;}
 
-        /**
-         * Stop motor
-         */
-        void stop(){
-            _velocitySet = 0.0;
-            return _motor->stop();
-        }
+
 
         /**
        * Get computed error
@@ -144,11 +146,15 @@ namespace robopi{
         const MotorLn298* motor() const {return _motor;}
         const Encoder* encoder() const {return _encoder;}
         const VelocityEstimator* velocityEstimator() const {return _velEstimator;}
+
+        double& P(){return _kp;}
+        double& I(){return _ki;}
+        double& D(){return _kd;}
     protected:
 
         double _kp,_ki,_kd;
+        const double _vMax;
         double _errLast,_errIntegr;
-
         MotorLn298* _motor;
         Encoder* _encoder;
         VelocityEstimator* _velEstimator;
