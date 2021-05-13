@@ -6,9 +6,9 @@
 #include "System.h"
 #include <math.h>
 
-constexpr float TICK_TO_S = (1/(1000.0));
-constexpr float COUNT_TO_RAD = M_PI/10.0f;
-constexpr float TICKS_US_TO_RAD_S = COUNT_TO_RAD / TICK_TO_S;
+constexpr double TICK_TO_S = (1/(1000.0));
+constexpr double COUNT_TO_RAD = M_PI/10.0f;
+constexpr double TICKS_US_TO_RAD_S = COUNT_TO_RAD / TICK_TO_S;
 
 namespace robopi{
 
@@ -19,9 +19,9 @@ namespace robopi{
 
     }
 
-    float Encoder::position() const
+    double Encoder::position() const
     {
-        float angle = (float)((int)_wheelTicks % 20) * COUNT_TO_RAD;
+        double angle = (double)((int)_wheelTicks % 20) * COUNT_TO_RAD;
         if (angle < 0)
         {
             angle = M_2_PI - angle;

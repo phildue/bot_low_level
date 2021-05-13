@@ -16,7 +16,7 @@ namespace robopi{
 
         long long wheelTicks() const {return _wheelTicks;}
 
-        float position() const;
+        double position() const;
 
 
         const GpioId& gpioIn() const { return _in;}
@@ -35,7 +35,7 @@ namespace robopi{
         System* _system;
         long long _wheelTicks;
         bool _direction;
-        float _timeout;
+        double _timeout;
 
 
     };

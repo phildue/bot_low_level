@@ -18,7 +18,7 @@ public:
      * Pass set point
      * @param pwm duty cycle -1.0 to 1.0
      */
-    void set(float dutyCycle);
+    void set(double dutyCycle);
 
     void stop();
 
@@ -27,20 +27,20 @@ protected:
      * Spin forward
      * @param duty cycle 0.0 -> 1.0
      */
-    void forward(float dutyCycle);
+    void forward(double dutyCycle);
 
     /**
      * Spin backward
      * @param duty cycle 0.0 -> 1.0
      */
-    void backward(float dutyCycle);
+    void backward(double dutyCycle);
 
     /**
      * Convert duty cycle to appropriate range.
      * @param duty cycle 0.0 -> 1.0
      * @return pwm duty in cycle in 0 [0%] -> 255 [100%]
      */
-    char convert(float dutyCycle);
+    char convert(double dutyCycle);
 
     GpioId _forward,_backward,_enable;
     System* _system;

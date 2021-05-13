@@ -10,9 +10,9 @@
 namespace robopi{
 
     typedef long long int Timestamp;
-    constexpr float SPEED_SOUND = 343.0f;
-    constexpr float T_TO_M = (1/(1000.0*1000.0)*SPEED_SOUND/2.0f);
-    constexpr float MAX_RANGE = 4.0;
+    constexpr double SPEED_SOUND = 343.0f;
+    constexpr double T_TO_M = (1/(1000.0*1000.0)*SPEED_SOUND/2.0f);
+    constexpr double MAX_RANGE = 4.0;
 
     class Measurement{
     public:
@@ -22,19 +22,19 @@ namespace robopi{
                 _distance(0)
         {
             Timestamp elapsed = _in - _out;
-            _distance = static_cast<float>(elapsed)*T_TO_M;
+            _distance = static_cast<double>(elapsed)*T_TO_M;
             if(_distance > MAX_RANGE)
             {
                 _distance = MAX_RANGE;
             }
 
         }
-        const float& distance() const{
+        const double& distance() const{
             return _distance;
         }
     private:
         Timestamp _out,_in;
-        float _distance;
+        double _distance;
     };
 
 

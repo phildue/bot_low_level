@@ -19,7 +19,7 @@ namespace robopi {
                 _system->setPWMfrequency(_enable,1000);
     }
 
-    void MotorLn298::set(float dutyCycle) {
+    void MotorLn298::set(double dutyCycle) {
         if (dutyCycle > 0) {
             forward(dutyCycle);
         } else {
@@ -27,14 +27,14 @@ namespace robopi {
         }
     }
 
-    void MotorLn298::forward(float dutyCycle) {
+    void MotorLn298::forward(double dutyCycle) {
         auto pwm = convert(dutyCycle);
         _system->pWM(_enable, pwm);
         _system->write(_forward, PI_ON);
         _system->write(_backward, PI_OFF);
     }
 
-    void MotorLn298::backward(float dutyCycle) {
+    void MotorLn298::backward(double dutyCycle) {
         auto pwm = convert(dutyCycle);
         _system->pWM(_enable, pwm);
         _system->write(_forward, PI_OFF);
@@ -46,8 +46,8 @@ namespace robopi {
         _system->write(_backward, PI_OFF);
     }
 
-    char MotorLn298::convert(float dutyCycle) {
-        float dutyCycleClipped = dutyCycle > 1.0 ? 1.0 : dutyCycle;
+    char MotorLn298::convert(double dutyCycle) {
+        double dutyCycleClipped = dutyCycle > 1.0 ? 1.0 : dutyCycle;
         dutyCycle = dutyCycleClipped < 0.0 ? 0.0 : dutyCycleClipped;
 
         return static_cast<char>(dutyCycle * 255.0f);

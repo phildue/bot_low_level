@@ -2,13 +2,13 @@
 constexpr double M_PI = 3.14159265358979323846;
 constexpr double US_TO_S = (1.0f/(1000.0f*1000.0f));
 constexpr double COUNT_TO_RAD = M_PI/10.0f;
-constexpr float TICKS_US_TO_RAD_S = COUNT_TO_RAD / US_TO_S;
-constexpr float RAD_S_TO_TICKS_US = 1.0f/TICKS_US_TO_RAD_S;
+constexpr double TICKS_US_TO_RAD_S = COUNT_TO_RAD / US_TO_S;
+constexpr double RAD_S_TO_TICKS_US = 1.0f/TICKS_US_TO_RAD_S;
 
 namespace robopi
 {
 
-    float SlidingAverageFilter::estimate(double pos, double dT)
+    double SlidingAverageFilter::estimate(double pos, double dT)
     {
 
         const double dPos = pos - _posLast;
@@ -30,10 +30,10 @@ namespace robopi
             _idx = 0;
         }
 
-        return static_cast<float>(_v);
+        return static_cast<double>(_v);
     }
 
-    float LuenbergerObserver::estimate(double pos, double dT)
+    double LuenbergerObserver::estimate(double pos, double dT)
     {
 
         _pos += _v * dT;
@@ -44,11 +44,11 @@ namespace robopi
 
         _v = _kp * err + _velIntegr;
 
-        return static_cast<float>(_v);
+        return static_cast<double>(_v);
 
     }
 
-    void MotorVelocityControl::update(float dT)
+    void MotorVelocityControl::update(double dT)
     {
 
         if (dT <= 0.0)
@@ -60,7 +60,7 @@ namespace robopi
         _velocityActual = _velEstimator->estimate(pos, static_cast<double>(dT));
 
 
-        float err = _velocitySet - _velocityActual;
+        double err = _velocitySet - _velocityActual;
 
 
         _errIntegr += err * dT;
@@ -74,7 +74,7 @@ namespace robopi
     }
 
     
-    void MotorVelocityControl::set(float velocity) {
+    void MotorVelocityControl::set(double velocity) {
         
         _velocitySet = velocity;
 

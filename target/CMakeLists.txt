@@ -1,6 +1,0 @@
-if (COMPILE_FOR_PI)
-    add_subdirectory(pi)
-endif()
-if(COMPILE_FOR_ARDUINO)
-    add_subdirectory(arduino)
-endif()

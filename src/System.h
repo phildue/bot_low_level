@@ -52,10 +52,10 @@ namespace robopi {
         virtual void setMode(int pin,int sig){};
 
         virtual void write(int pin,int sig){};
-        virtual void pWM(int pin,char sig){};
+        virtual void pWM(int pin,int sig){};
         virtual int read(int pin){return 0;};
 
-        virtual float getPWMdutycycle(int pin){return 0.0f;};
+        virtual double getPWMdutycycle(int pin){return 0.0f;};
 
         virtual void setPWMfrequency(int pin,int freq){};
         virtual void setPullUpDown(int,int){};
