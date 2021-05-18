@@ -33,9 +33,8 @@ namespace robopi{
     protected:
         GpioId _in;
         System* _system;
-        long long _wheelTicks;
+        volatile long long _wheelTicks;
         bool _direction;
-        double _timeout;
 
 
     };

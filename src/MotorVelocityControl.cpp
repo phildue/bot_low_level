@@ -65,6 +65,14 @@ namespace robopi
 
         _errIntegr += err * dT;
 
+        if (_errIntegr > _errIntegrMax)
+        {
+            _errIntegr = _errIntegrMax;
+        }else if(_errIntegr < - 1.0 * _errIntegrMax)
+        {
+            _errIntegrMax = -1.0 * _errIntegrMax;
+        }
+
         _dutySet = _kp * err + _ki * _errIntegr + _kd * (err - _errLast)/dT;
 
         _errLast = err;
@@ -77,14 +85,6 @@ namespace robopi
     void MotorVelocityControl::set(double velocity) {
 
         if (velocity > _vMax)
-        {
-            _velocitySet = _vMax;
-        }
-        else if (velocity < -1.0 * _vMax)
-        {
-            _velocitySet = -1.0 * _vMax;
-        }
-        else if(velocity > _vMax)
         {
             _velocitySet = _vMax;
         }

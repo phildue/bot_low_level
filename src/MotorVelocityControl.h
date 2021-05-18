@@ -70,7 +70,7 @@ namespace robopi{
     {
     public:
         MotorVelocityControl(MotorLn298* motor,Encoder* encoder, VelocityEstimator* velEstimator,
-            double kp, double ki, double kd,double vMax = MAX_VEL_DF_DC):
+            double kp, double ki, double kd,double errIMax, double vMax = MAX_VEL_DF_DC):
         _motor(motor),
         _velEstimator(velEstimator),
         _encoder(encoder),
@@ -82,7 +82,8 @@ namespace robopi{
         _velocitySet(0.0),
         _velocityActual(0.0),
         _dutySet(0.0),
-        _vMax(vMax){
+        _vMax(vMax),
+        _errIntegrMax(errIMax){
             
             
         }
@@ -160,7 +161,7 @@ namespace robopi{
         VelocityEstimator* _velEstimator;
         double _velocitySet, _dutySet;
         double _velocityActual;
-    
+        double _errIntegrMax;
     };
 
 }
