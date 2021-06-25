@@ -21,12 +21,7 @@ namespace robopi{
 
     double Encoder::position() const
     {
-        double angle = (double)((int)_wheelTicks % 20) * COUNT_TO_RAD;
-        if (angle < 0)
-        {
-            angle = M_2_PI - angle;
-        }
-        return angle;
+        return _wheelTicks * COUNT_TO_RAD;
     }
 
     Encoder::Encoder(GpioId in, System* system):
@@ -37,11 +32,6 @@ namespace robopi{
         system->setMode(_in, PI_INPUT);
 
         system->setPullUpDown(_in, PI_PUD_UP);
-
-
-    }
-    Encoder::~Encoder()
-    {
 
 
     }

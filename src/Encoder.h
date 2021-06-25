@@ -27,7 +27,6 @@ namespace robopi{
 
         void setDirection(bool forward){_direction = forward;}
 
-        ~Encoder();
 
 
     protected:

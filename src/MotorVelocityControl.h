@@ -162,6 +162,8 @@ namespace robopi{
         double _velocitySet, _dutySet;
         double _velocityActual;
         double _errIntegrMax;
+
+        void clamp(double* value, double max, double min);
     };
 
 }

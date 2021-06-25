@@ -55,23 +55,14 @@ namespace robopi
         {
             return;
         }
-        const double pos = static_cast<double>(_encoder->wheelTicks())*COUNT_TO_RAD;
-      
-        _velocityActual = _velEstimator->estimate(pos, dT);
+        _velocityActual = _velEstimator->estimate(_encoder->position(), dT);
 
 
         double err = _velocitySet - _velocityActual;
 
-
         _errIntegr += err * dT;
 
-        if (_errIntegr > _errIntegrMax)
-        {
-            _errIntegr = _errIntegrMax;
-        }else if(_errIntegr < - 1.0 * _errIntegrMax)
-        {
-            _errIntegrMax = -1.0 * _errIntegrMax;
-        }
+        clamp(&_errIntegr,_errIntegrMax,-1.0*_errIntegrMax);
 
         _dutySet = _kp * err + _ki * _errIntegr + _kd * (err - _errLast)/dT;
 
@@ -84,17 +75,8 @@ namespace robopi
     
     void MotorVelocityControl::set(double velocity) {
 
-        if (velocity > _vMax)
-        {
-            _velocitySet = _vMax;
-        }
-        else if (velocity < -1.0 * _vMax)
-        {
-            _velocitySet = -1.0 * _vMax;
-        }else{
-            _velocitySet = velocity;
-
-        }
+        _velocitySet = velocity;
+        clamp(&_velocitySet,_vMax,-1.0*_vMax);
 
     }
 
@@ -106,9 +88,19 @@ namespace robopi
         _velocityActual = 0.0;
         _dutySet = 0.0;
         _motor->stop();
-        _encoder->reset();
     }
 
-    
+
+    void MotorVelocityControl::clamp(double* value, double max, double min)
+    {
+        if (*value > max)
+        {
+            *value = _vMax;
+        }
+        else if (*value < min)
+        {
+            *value = min;
+        }
+    }
 
 }		
