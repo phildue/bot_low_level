@@ -44,8 +44,8 @@ struct MotorLog
 
 int main(int argc, char *argv[])
 {
-    auto pigpio = PiGpio::instance();
-    gpioSetSignalFunc(SIGINT,sigHandler);
+    auto pigpio = Gpio::instance();
+    pigpio->setSignalFunc(SIGINT,sigHandler);
     float kp = 0.009;//0.2;
     float kd = 0.00;
     float ki = 0.00;

@@ -4,40 +4,41 @@
 
 #ifndef MOTOR_LN298_ENC_H
 #define MOTOR_LN298_ENC_H
-#include <memory>
-#include <vector>
-#include "PiGpio.h"
+#include "System.h"
 #include "Encoder.h"
 #include "MotorLn298.h"
 
 namespace robopi{
-    constexpr float MAX_VEL_DF_DC = 16.755;//rad_s
+    constexpr double MAX_VEL_DF_DC = 16.755;//rad_s
 
 
     class VelocityEstimator {
         public:
-            virtual float estimate(double pos, double dT) = 0;
+            virtual double estimate(double pos, double dT) = 0;
     };
 
     class SlidingAverageFilter : public VelocityEstimator
     {
         public:
-            SlidingAverageFilter(uint16_t size):
+            SlidingAverageFilter(unsigned int size):
             _size(size),
             _posLast(0U),
             _v(0.0f),
             _idx(0U){
-                _vs.resize(_size);
+                _vs = new double[size];
                 for(int i = 0; i < _size; i++)
                 {
                     _vs[i] = 0.0f;
                 }
             }
-            float estimate(double pos, double dT) override;
+            ~SlidingAverageFilter(){
+                delete _vs;
+            }
+            double estimate(double pos, double dT) override;
         private:
             const double _size;
             double _posLast;
-            std::vector<double> _vs;
+            double* _vs;
             unsigned int _idx;
             double _v;
     };
@@ -53,7 +54,9 @@ namespace robopi{
             _velIntegr(0.0f),
             _pos(0U){}
 
-            float estimate(double pos, double dT) override;
+            double estimate(double pos, double dT) override;
+            double& P() {return _kp;}
+            double& I() {return _ki;}
         private:
 
             double _pos;
@@ -63,11 +66,11 @@ namespace robopi{
     };
 
 
-    class MotorVelocityControl : public TickHandler
+    class MotorVelocityControl
     {
     public:
-        MotorVelocityControl(std::shared_ptr<MotorLn298> motor,std::shared_ptr<Encoder> encoder, std::shared_ptr<VelocityEstimator> velEstimator,
-            float kp, float ki, float kd,float maxVel = MAX_VEL_DF_DC):
+        MotorVelocityControl(MotorLn298* motor,Encoder* encoder, VelocityEstimator* velEstimator,
+            double kp, double ki, double kd,double errIMax, double vMax = MAX_VEL_DF_DC):
         _motor(motor),
         _velEstimator(velEstimator),
         _encoder(encoder),
@@ -76,62 +79,91 @@ namespace robopi{
         _kd(kd),
         _errLast(0.0),
         _errIntegr(0.0),
-        _tLast(0),
         _velocitySet(0.0),
         _velocityActual(0.0),
-        _dutySet(0.0){
+        _dutySet(0.0),
+        _vMax(vMax),
+        _errIntegrMax(errIMax){
             
             
         }
 
         /**
          * Pass set point
-         * @param velocity in rad/s
+         * @param velocity in [rad/s]
          */
-        void set(float velocity);
+        void set(double velocity);
 
         /**
          * Perform control loop iteration
+         * @param dT time difference since last update [s]
          */
-        void update(unsigned long t);
+        void update(double dT);
+
+        /**
+         * Stop motor. Reset internals as well as encoder ticks.
+         */
+        void stop();
 
         /**
          * Get angular position from encoder
-         * @return angle in rad
+         * @return angle in [rad]
          */
-        float position() const {return _encoder->position();}
+        double position() const {return _encoder->position();}
 
         /**
          * Get position from encoder
-         * @return position in wheel ticks
+         * @return position in [wheel ticks]
          */
         long long wheelTicks() const {return _encoder->wheelTicks();}
 
 
         /**
        * Get filtered angular velocity
-       * @return velocity in rad/s
+       * @return velocity in [rad/s]
        */
-        float velocity() const {return _velocityActual;}
+        const double& velocity() const {return _velocityActual;}
 
-        void stop(){return _motor->stop();}
+        /**
+       * Get set point angular velocity
+       * @return velocity in [rad/s]
+       */
+        const double& velocitySet() const {return _velocitySet;}
 
-        const float& error() { return _errLast;}
-        const float& dutySet() { return _dutySet;}
 
-        void handleTick(uint32_t tick, long long wheelTicks);
+
+        /**
+       * Get computed error
+       * @return error in [rad/s]
+       */
+        const double& error() { return _errLast;}
+
+        /**
+       * Get set point to pwm
+       * @return pwm duty cycle in [%]
+       */
+        double dutySet() { return _dutySet*100.0;}
+
+        const MotorLn298* motor() const {return _motor;}
+        const Encoder* encoder() const {return _encoder;}
+        const VelocityEstimator* velocityEstimator() const {return _velEstimator;}
+
+        double& P(){return _kp;}
+        double& I(){return _ki;}
+        double& D(){return _kd;}
     protected:
 
-        float _kp,_ki,_kd;
-        float _errLast,_errIntegr;
-        unsigned long _tLast;
+        double _kp,_ki,_kd;
+        const double _vMax;
+        double _errLast,_errIntegr;
+        MotorLn298* _motor;
+        Encoder* _encoder;
+        VelocityEstimator* _velEstimator;
+        double _velocitySet, _dutySet;
+        double _velocityActual;
+        double _errIntegrMax;
 
-        std::shared_ptr<MotorLn298> _motor;
-        std::shared_ptr<Encoder> _encoder;
-        std::shared_ptr<VelocityEstimator> _velEstimator;
-        float _velocitySet, _dutySet;
-        float _velocityActual;
-    
+        void clamp(double* value, double max, double min);
     };
 
 }

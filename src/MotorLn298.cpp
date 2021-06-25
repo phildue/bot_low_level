@@ -4,70 +4,55 @@
 
 #include "MotorLn298.h"
 
-#ifdef COMPILE_FOR_PI
-#include <pigpio.h>
-#else
-#include <pigpiostub.h>
-#endif
-#include <stdexcept>
-#include <iostream>
 namespace robopi {
 
 
-    MotorLn298::MotorLn298(GpioId forward, GpioId backward, GpioId enable, std::shared_ptr<PiGpio> piGpio) :
+    MotorLn298::MotorLn298(GpioId forward, GpioId backward, GpioId enable, System* system) :
             _forward(forward),
             _backward(backward),
             _enable(enable),
-            _piGpio(piGpio)
+            _system(system)
             {
-
-
-        initialize();
-        gpioSetMode(_forward, PI_OUTPUT);
-        gpioSetMode(_backward, PI_OUTPUT);
-        gpioSetMode(_enable, PI_OUTPUT);
-        gpioSetPWMfrequency(_enable,1000);
+                _system->setMode(_forward, PI_OUTPUT);
+                _system->setMode(_backward, PI_OUTPUT);
+                _system->setMode(_enable, PI_OUTPUT);
+                _system->setPWMfrequency(_enable,1000);
     }
 
-    void MotorLn298::set(float dutyCycle) {
-        initialize();
+    void MotorLn298::set(double dutyCycle) {
         if (dutyCycle > 0) {
             forward(dutyCycle);
         } else {
-            backward(std::abs(dutyCycle));
+            backward(-1.0 * dutyCycle);
         }
     }
 
-    void MotorLn298::forward(float dutyCycle) {
+    void MotorLn298::forward(double dutyCycle) {
         auto pwm = convert(dutyCycle);
-        gpioPWM(_enable, pwm);
-        gpioWrite(_forward, PI_ON);
-        gpioWrite(_backward, PI_OFF);
+        _system->pWM(_enable, pwm);
+        _system->write(_forward, PI_ON);
+        _system->write(_backward, PI_OFF);
     }
 
-    void MotorLn298::backward(float dutyCycle) {
+    void MotorLn298::backward(double dutyCycle) {
         auto pwm = convert(dutyCycle);
-        gpioPWM(_enable, pwm);
-        gpioWrite(_forward, PI_OFF);
-        gpioWrite(_backward, PI_ON);
+        _system->pWM(_enable, pwm);
+        _system->write(_forward, PI_OFF);
+        _system->write(_backward, PI_ON);
     }
 
     void MotorLn298::stop() {
-        initialize();
-        gpioWrite(_forward, PI_OFF);
-        gpioWrite(_backward, PI_OFF);
+        _system->pWM(_enable, 0);
+        _system->write(_forward, PI_OFF);
+        _system->write(_backward, PI_OFF);
     }
 
-    int MotorLn298::convert(float dutyCycle) {
-        float dutyCycleClipped = dutyCycle > 1.0 ? 1.0 : dutyCycle;
+    char MotorLn298::convert(double dutyCycle) {
+        double dutyCycleClipped = dutyCycle > 1.0 ? 1.0 : dutyCycle;
         dutyCycle = dutyCycleClipped < 0.0 ? 0.0 : dutyCycleClipped;
 
-        return static_cast<int>(dutyCycle * 255.0f);
+        return static_cast<char>(dutyCycle * 255.0f);
     }
 
-    void MotorLn298::initialize() {
-        if (gpioInitialise() < 0) {
-            throw std::runtime_error("pigpio initialisation failed\n");
-        }
-    }
+
 }

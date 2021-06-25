@@ -27,7 +27,7 @@ const int nIterations = (int)(T/dT);
 const int dT_ms =(int) (dT*1000.0f);
 const float setPoint = 0.5f;
 
-struct MotorLog : public TickHandler
+struct MotorLog //: public TickHandler
 {
     MotorLog(int size)
     {
@@ -42,7 +42,7 @@ struct MotorLog : public TickHandler
     std::vector<float> chronoUs;
     std::chrono::time_point<std::chrono::high_resolution_clock> start;
 
-    void handleTick(uint32_t tick, long long wheelTicks) override
+    void handleTick(uint32_t tick, long long wheelTicks) //override
     {
         position.push_back(wheelTicks);
         gpioTick.push_back(tick);
@@ -56,8 +56,8 @@ struct MotorLog : public TickHandler
 
 int main(int argc, char *argv[])
 {
-    auto pigpio = PiGpio::instance();
-    gpioSetSignalFunc(SIGINT,sigHandler);
+    auto pigpio = Gpio::instance();
+    pigpio->setSignalFunc(SIGINT,sigHandler);
 
     MotorLn298 motorRight(pins::in1,pins::in2,pins::enA);
     MotorLn298 motorLeft(pins::in4,pins::in3,pins::enB);
@@ -70,8 +70,8 @@ int main(int argc, char *argv[])
     auto logMotorRight = std::make_shared<MotorLog>(nIterations*10);
     auto logMotorLeft = std::make_shared<MotorLog>(nIterations*10); 
 
-    encRight.subscribe(logMotorRight);
-    encLeft.subscribe(logMotorLeft);
+//    encRight.subscribe(logMotorRight);
+//    encLeft.subscribe(logMotorLeft);
 
     std::vector<float> t(nIterations);
     std::vector<float> ticksLeft(nIterations),ticksRight(nIterations);
