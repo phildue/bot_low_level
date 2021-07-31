@@ -5,21 +5,16 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
-#include "types.h"
-#include "System.h"
 namespace robopi{
 
     class Encoder
     {
     public:
-        Encoder(GpioId in, System* system);
+        Encoder(double ticksPerRad);
 
         long long wheelTicks() const {return _wheelTicks;}
 
         double position() const;
-
-
-        const GpioId& gpioIn() const { return _in;}
 
         void tick();
 
@@ -30,10 +25,9 @@ namespace robopi{
 
 
     protected:
-        GpioId _in;
-        System* _system;
         volatile long long _wheelTicks;
         bool _direction;
+        const double _ticksToRad;
 
 
     };
