@@ -1,4 +1,4 @@
-# robopi_drivers
+# bot_low_level
 Low Level helpers to read sensors / control actuators via GPIO
 
 * Sonar HCRS04 driver to read distance
@@ -7,5 +7,9 @@ Low Level helpers to read sensors / control actuators via GPIO
 * PID velocity control with Lueneberger Observer / Sliding Average Filter for speed control of DC motors
 
 Usage:
+
+For Arduino place in ~/Arduino/libraries/..
+
+Use as library in sketch file e.g.:
 
 https://github.com/phildue/arduino_motor_control
