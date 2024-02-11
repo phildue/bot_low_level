@@ -1,0 +1,16 @@
+{
+  "name": "bot_low_level",
+  "keywords": "control",
+  "description": "low level software for motors with encoders",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/phildue/robopi_drivers"
+  },
+  "frameworks": "arduino",
+  "platforms":
+  [
+    "atmelavr",
+    "teensy"
+  ]
+}
