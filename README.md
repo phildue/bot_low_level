@@ -1,4 +1,4 @@
-# robopi_drivers
+# Bot Low Level
 Low Level helpers to read sensors / control actuators via GPIO
 
 * Sonar HCRS04 driver to read distance
