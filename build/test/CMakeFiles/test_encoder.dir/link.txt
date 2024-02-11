@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/test_encoder.dir/test_encoder.cpp.o CMakeFiles/test_encoder.dir/csv.cpp.o -o test_encoder  ../libbot_low_level.a 

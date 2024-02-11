@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(robopi_drivers)
+project(bot_low_level)
 
 set(COMPILE_FOR_ARDUINO FALSE CACHE BOOL "Set true if compile for pi")
 set(COMPILE_FOR_PI FALSE CACHE BOOL "Set true if compile for pi")
@@ -7,7 +7,6 @@ set(COMPILE_FOR_PI FALSE CACHE BOOL "Set true if compile for pi")
 set(COMPILE_FOR_PI TRUE CACHE BOOL "Set true if compile for pi")
 
 add_library(${PROJECT_NAME}
-        include/robopi_drivers/robopi_drivers.h
         src/MotorLn298.h
         src/MotorVelocityControl.cpp
         src/MotorVelocityControl.h
@@ -36,6 +35,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 if(COMPILE_TESTS)
 
-add_subdirectory(target)
+add_subdirectory(test)
 endif()
 
