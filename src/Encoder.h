@@ -18,6 +18,12 @@ namespace robopi{
 
         void tick();
 
+        void tickForward();
+        
+        void tickBackward();
+
+        double ticks() const;
+
         void reset() {_wheelTicks = 0;};
 
         void setDirection(bool forward){_direction = forward;}

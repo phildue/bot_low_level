@@ -16,16 +16,29 @@ namespace robopi{
 
     }
 
+    void Encoder::tickForward(){
+        _wheelTicks++;
+    }
+        
+    void Encoder::tickBackward(){
+        _wheelTicks--;
+
+    }
+
+
     double Encoder::position() const
     {
         return _wheelTicks * _ticksToRad;
     }
 
+    double Encoder::ticks() const
+    {
+        return _wheelTicks;
+    }
     Encoder::Encoder(double ticksPerRad)
     :     _wheelTicks(0U)
     ,    _direction(true)
-    ,    _ticksToRad(2.0 * M_PI * ticksPerRad){
-
+    ,    _ticksToRad(2.0 * M_PI / ticksPerRad){
 
 
     }
